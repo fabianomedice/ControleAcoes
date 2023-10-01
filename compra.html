@@ -1,0 +1,137 @@
+<!DOCTYPE html> 
+
+<html lang="pt-br" style="scroll-behavior: smooth;">
+	<head>
+		<!-- Titulo da aba-->
+		<title> 
+			Controle de Ações de Vanderlei
+		</title>
+		<!-- Metadados -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="author" content="Fabiano Médice">
+        <link rel="stylesheet" type="text/css" href="CSS/style.css">
+	</head>
+	<body>
+        <header>
+            <nav class="menu">
+                <div class="menu-dropdown">
+                    <button class="botao-dropdown">Consultas</button>
+                    <div class="conteudo-dropdown">
+                        <a href="resumo.html">Carteira de Ações Atuais</a>
+                        <a href="controlelucroprejuizo.html">Controle de Lucro e Prejuízo</a>
+                        <a href="historico.html">Histórico de Notas Fiscais</a>
+                        <a href="imposto.html">Imposto Devido Mensal</a>
+                    </div>
+                </div>    
+                <div class="menu-dropdown PaginaAtiva">
+                    <button class="botao-dropdown">Cadastros</button>
+                    <div class="conteudo-dropdown">
+                        <a href="compra.html">Compra de Ações</a>
+                        <a href="venda.html">Venda de Ações</a>
+                        <a href="notafiscal.html">Nota Fiscal</a>
+                    </div>
+                </div>    
+                <div class="menu-dropdown">
+                    <button class="botao-dropdown">Modificações</button>
+                    <div class="conteudo-dropdown">
+                        <a href="mudancavenda.html">Modificar Venda</a>
+                        <a href="cancelarcadastro.html">Cancelar Cadastro</a>
+                    </div>
+                </div>
+                <div class="menu-dropdown" >
+                    <button class="botao-dropdown" onclick="window.location.href='index.html';">Sobre</button>
+                </div>
+            </nav>
+            <h1 id="titulo">Registro de Compra de Ações</h1>     
+        </header>
+        
+        <section >
+            <br>
+            <div style="grid-template-columns: 2fr 8fr 1fr 8fr 2fr; display: grid">
+                <div><!-- div vazia --></div>
+                <div style="text-align: right;">
+                    <label for="NomeAcao">Nome da Ação:</label><br><br>
+                    <label for="CorretoraAcao">Corretora da Ação:</label><br><br>
+                    <label for="QuantidadeAcaoComprada">Quantidade da Ações Compradas:</label><br><br>
+                    <label for="CustoAcao">Custo Unitário da Ação na Nota Fiscal:</label><br><br>
+                    <label for="NotaFiscalAcao">Nota Fiscal da Ação:</label><br><br>
+                    <label for="DataCompra">Data da compra da Ação:</label><br><br>
+                </div>
+                <div><!-- div vazia --></div>
+                <div>
+                    <form method="POST" action="PHP/RegistraCompra.php" id="RegistraCompra">
+                        <input type="text" name="NomeAcao" id="NomeAcao" oninput='ColocarMaiusculo()' placeholder="Nome da Ação" required><br><br>
+                        <select style="width: 177px; height: 21px;" id='CorretoraAcao' name='CorretoraAcao'>
+                            <option value="Ativa"> Ativa</option>
+                            <option value="BB"> Banco do Brasil</option>
+                            <option value="Bradesco"> Bradesco</option>
+                            <option value="Rico"> Rico</option>
+                        </select><br><br>
+                        <input type="number" name="QuantidadeAcaoComprada" id="QuantidadeAcaoComprada" min="0" placeholder="Quantidade" required><br><br>
+                        <input type="number" name="CustoAcao" id="CustoAcao" min="0" placeholder="Custo Bruto da Ação" step="0.01" oninput="formatanumero()" required><br><br>
+                        <input type="text" name="NotaFiscalAcao" id="NotaFiscalAcao" min="0" placeholder="Nota Fiscal" required><br><br>
+                        <input type="date" name="DataCompra" id="DataCompra" style="width: 172px;" required><br><br>
+                    </form>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <div>
+                    <input type="submit" value="Cadastrar Compra de Ações" form="RegistraCompra">
+                </div>
+            </div>
+        
+            <br><br>
+                
+        </section>
+        <footer>
+            <b>Feito por Fabiano Médice<br>2020</b>
+        </footer>
+        <script>
+            function ColocarMaiusculo()
+            {
+                document.getElementById("NomeAcao").value = document.getElementById("NomeAcao").value.toUpperCase();
+            }
+
+            function formatanumero()
+            {
+                var dinheiro_formatado = document.getElementById("CustoAcao").value
+                //O usuário digitou o primeiro número
+                if(dinheiro_formatado.length==1)
+                {
+                    //divide por 100 pra colocar em centavos
+                    document.getElementById("CustoAcao").value = document.getElementById("CustoAcao").value/100;
+                }
+                //O usuário digitou primeiro a virgula
+                if(dinheiro_formatado.length==2)
+                {
+                    //soma com zero para padronizar o número
+                    document.getElementById("CustoAcao").value = 0+document.getElementById("CustoAcao").value;
+                }
+                //Por estar em centavos, todo length agora tem no minimo tamanho 4
+                if(dinheiro_formatado.length>4)
+                {
+                    //Se ele for maior que 4, ou seja 0,0XY - 0(termo 0) ,(termo 1) 0(termo 2) X(termo 3) Y(termo 4)
+                    //um novo valor foi digitado, então pegamos os 4 ultimos e alteramos a vírgula
+                    //Ao pegar os ultimos quatro digitos,temos ",XYZ" sendo Z o ultimo valor digitado
+                    var final_4_digitos = dinheiro_formatado.slice(-4);
+                    //então pegamos todo o valor retirando os ultimos 4 (por isto o -4 no slice) e alteramos com os valores anteriores trocando a "," (termo 0) pelo o X (termo 1)
+                    //porém, tem que se conferir se esses zeros a esquerda não vão subindo
+                    if(dinheiro_formatado[0]==0)
+                    {
+                        //Mesmo sendo texto, como só tem número aqui, se o valor for zero, a gente não deixa esse zero a esquerda crescer
+                        //Ou seja, a gente só pega os dois primeiros termos "R$" e muda a virgula de lugar
+                        document.getElementById("CustoAcao").value = final_4_digitos[1]+final_4_digitos[0]+final_4_digitos.slice(2);
+                    }
+                    else
+                    {
+                        //Se não for zero, só muda a virgula
+                        document.getElementById("CustoAcao").value=dinheiro_formatado.slice(0,-4)+final_4_digitos[1]+final_4_digitos[0]+final_4_digitos.slice(2);
+                    }
+                }
+            }
+            
+            
+        </script>
+    </body>
+</html>

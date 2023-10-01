@@ -1,0 +1,452 @@
+<!DOCTYPE html> 
+
+<html lang="pt-br" style="scroll-behavior: smooth;">
+	<head>
+		<!-- Titulo da aba-->
+		<title> 
+			Controle de Ações de Vanderlei
+		</title>
+		<!-- Metadados -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="author" content="Fabiano Médice">
+        <link rel="stylesheet" type="text/css" href="CSS/style.css">
+	</head>
+	<body>
+        <header>
+            <nav class="menu">
+                <div class="menu-dropdown PaginaAtiva">
+                    <button class="botao-dropdown">Consultas</button>
+                    <div class="conteudo-dropdown">
+                        <a href="resumo.html">Carteira de Ações Atuais</a>
+                        <a href="controlelucroprejuizo.html">Controle de Lucro e Prejuízo</a>
+                        <a href="historico.html">Histórico de Notas Fiscais</a>
+                        <a href="imposto.html">Imposto Devido Mensal</a>
+                    </div>
+                </div>    
+                <div class="menu-dropdown">
+                    <button class="botao-dropdown">Cadastros</button>
+                    <div class="conteudo-dropdown">
+                        <a href="compra.html">Compra de Ações</a>
+                        <a href="venda.html">Venda de Ações</a>
+                        <a href="notafiscal.html">Nota Fiscal</a>
+                    </div>
+                </div>    
+                <div class="menu-dropdown">
+                    <button class="botao-dropdown">Modificações</button>
+                    <div class="conteudo-dropdown">
+                        <a href="mudancavenda.html">Modificar Venda</a>
+                        <a href="cancelarcadastro.html">Cancelar Cadastro</a>
+                    </div>
+                </div>
+                <div class="menu-dropdown" >
+                    <button class="botao-dropdown" onclick="window.location.href='index.html';">Sobre</button>
+                </div>
+            </nav>
+            <h1 id="titulo">Situação Atual da Carteira de Ações</h1>     
+        </header>
+        
+        <section >
+            <div id="NavAcoes" class="Navegacao">
+                <h2 style="padding:0px; margin:0px;">Menu de Navegação das Ações</h2>
+                Navegação por Ação
+            </div>
+            <br>
+            <div style="grid-template-columns: 1fr 20fr 1fr; display: grid">
+                <div><!-- div vazia --></div>
+                <div id="AcoesResumidas">
+                    Resumo das Ações
+                </div>
+            </div>
+        
+            <br><br>
+                
+        </section>
+        <footer>
+            <b>Feito por Fabiano Médice<br>2020</b>
+        </footer>
+        <script>
+             Chamar_Banco_De_Dados_Acoes();
+             Chamar_Banco_De_Dados_NF();
+             CarregaBancoDeDados();
+
+            // -------------------------------------------------------
+            // Chamada do banco de dados das ações
+            // -------------------------------------------------------
+            function Chamar_Banco_De_Dados_Acoes() 
+            {
+                var xhttp;
+                xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() 
+                {
+                    if (this.readyState == 4 && this.status == 200) 
+                    {
+                        $BancoDeDados_Acoes = JSON.parse(this.responseText);
+                        //console.log($BancoDeDados_Acoes)
+                    }
+                }
+                xhttp.open("GET", "PHP/Resumo.php", false); //o false não deixa ser assincrono
+                xhttp.send();
+            }
+
+            // -------------------------------------------------------
+            // Chamada do banco de dados das NF
+            // -------------------------------------------------------
+            function Chamar_Banco_De_Dados_NF() 
+            {
+                var xhttp;
+                xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() 
+                {
+                    if (this.readyState == 4 && this.status == 200) 
+                    {
+                        $BancoDeDados_NF = JSON.parse(this.responseText);
+                        //console.log($BancoDeDados_NF)
+                    }
+                }
+                xhttp.open("GET", "PHP/LerNF.php", false); //o false não deixa ser assincrono
+                xhttp.send();
+            }
+
+            // -------------------------------------------------------
+            // Carrega os dados do Banco de Dados
+            // -------------------------------------------------------
+            function CarregaBancoDeDados()
+            {
+                //Cria o vetor de Nome de ações
+                var NomeAcoes = [];
+                //Cria as quantidades totais
+                var QuantidadesAcoes = {};
+                //Cria as ponderações (Quantidade * Custo)
+                var PonderacoesAcoesNF = {};
+                //Cria as ponderações 
+                var PonderacoesAcoesCusto = {};
+
+                for (i = 0; i < $BancoDeDados_Acoes.length; i++)
+                {
+                    if(NomeAcoes.length==0)
+                    {
+                        //Recebe o primeiro nome
+                        NomeAcoes[0]=$BancoDeDados_Acoes[i].NomeAcao;
+                        QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao] = {Ativa: 0, BB: 0, Bradesco: 0, Rico: 0, Total: 0};
+                        PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao] = {Ativa: 0, BB: 0, Bradesco: 0, Rico: 0, Total: 0};
+                        PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao] = {Ativa: 0, BB: 0, Bradesco: 0, Rico: 0, Total: 0};
+                        
+                        var QuantidadeNF = $BancoDeDados_NF.length; //teste para conferencia de Nota Fiscal
+                        //Calculo do preço líquido
+                        for(j=0;j<$BancoDeDados_NF.length;j++)
+                        {
+                            if($BancoDeDados_Acoes[i].DataCompra == $BancoDeDados_NF[j].Data && $BancoDeDados_Acoes[i].CorretoraAcao == $BancoDeDados_NF[j].CorretoraNF && $BancoDeDados_Acoes[i].NotaFiscalAcao == $BancoDeDados_NF[j].NotaFiscal)
+                            {
+                                var CustoTotalOperacao = $BancoDeDados_NF[j].CustoTotalOperacao;
+                                var ValorOperacoesTotais = $BancoDeDados_NF[j].ValorOperacoesTotais;
+                            }
+                            else
+                            {
+                                //Não achou a Nota Fiscal
+                                QuantidadeNF = QuantidadeNF-1;
+                                if(QuantidadeNF==0)
+                                {
+                                    //não achou a Nota Fiscal
+                                    var CustoTotalOperacao = 0;
+                                    var ValorOperacoesTotais = 0;
+                                }
+                            }
+                        }
+                        //Soma o custo da operação
+                        PrecoLiquidoTotal = ($BancoDeDados_Acoes[i].CustoAcao*$BancoDeDados_Acoes[i].QuantidadeRestante+$BancoDeDados_Acoes[i].QuantidadeRestante*$BancoDeDados_Acoes[i].CustoAcao/ValorOperacoesTotais*CustoTotalOperacao);
+                        //console.log('Preço Liquido Total = '+PrecoLiquidoTotal)
+
+                        //adiciona o valor
+                        if($BancoDeDados_Acoes[i].CorretoraAcao == "Ativa")
+                        {
+                            QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Ativa = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Ativa + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+                            QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+
+                            PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Ativa = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Ativa + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+                            PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+
+                            PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Ativa = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Ativa + PrecoLiquidoTotal;
+                            PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total + PrecoLiquidoTotal;
+                        }
+                        else if($BancoDeDados_Acoes[i].CorretoraAcao == "BB")
+                        {
+                            QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].BB = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].BB + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+                            QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+
+                            PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].BB = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].BB + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+                            PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+
+                            PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].BB = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].BB + PrecoLiquidoTotal;
+                            PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total + PrecoLiquidoTotal;
+                        }
+                        else if($BancoDeDados_Acoes[i].CorretoraAcao == "Bradesco")
+                        {
+                            QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Bradesco = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Bradesco + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+                            QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+
+                            PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Bradesco = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Bradesco + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+                            PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+
+                            PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Bradesco = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Bradesco + PrecoLiquidoTotal;
+                            PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total + PrecoLiquidoTotal;
+                        }
+                        else if($BancoDeDados_Acoes[i].CorretoraAcao == "Rico")
+                        {
+                            QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Rico = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Rico + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+                            QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+
+                            PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Rico = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Rico + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+                            PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+
+                            PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Rico = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Rico + PrecoLiquidoTotal;
+                            PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total + PrecoLiquidoTotal;
+                        }
+                    }
+                    else
+                    {
+                        var QuantidadeNF = $BancoDeDados_NF.length; //teste para conferencia de Nota Fiscal
+                        //Calculo do preço líquido
+                        for(j=0;j<$BancoDeDados_NF.length;j++)
+                        {
+                            if($BancoDeDados_Acoes[i].DataCompra == $BancoDeDados_NF[j].Data && $BancoDeDados_Acoes[i].CorretoraAcao == $BancoDeDados_NF[j].CorretoraNF && $BancoDeDados_Acoes[i].NotaFiscalAcao == $BancoDeDados_NF[j].NotaFiscal)
+                            {
+                                var CustoTotalOperacao = $BancoDeDados_NF[j].CustoTotalOperacao;
+                                var ValorOperacoesTotais = $BancoDeDados_NF[j].ValorOperacoesTotais;
+                            }
+                            else
+                            {
+                                //Não achou a Nota Fiscal
+                                QuantidadeNF = QuantidadeNF-1;
+                                if(QuantidadeNF==0)
+                                {
+                                    //não achou a Nota Fiscal
+                                    var CustoTotalOperacao = 0;
+                                    var ValorOperacoesTotais = 0;
+                                }
+                            }
+                        }
+                        //Soma o custo da operação
+                        PrecoLiquidoTotal = ($BancoDeDados_Acoes[i].CustoAcao*$BancoDeDados_Acoes[i].QuantidadeRestante+$BancoDeDados_Acoes[i].QuantidadeRestante*$BancoDeDados_Acoes[i].CustoAcao/ValorOperacoesTotais*CustoTotalOperacao);
+                        //console.log('Preço Liquido Total = '+PrecoLiquidoTotal)
+
+                        //procura para ver se o nome já foi achado antes
+                        var AchouNome = false;
+                        for(j=0; j<NomeAcoes.length; j++)
+                        {
+                            if(NomeAcoes[j]==$BancoDeDados_Acoes[i].NomeAcao)
+                            {
+                                //achou o nome
+                                AchouNome = true;
+                                //adiciona o valor
+                                if($BancoDeDados_Acoes[i].CorretoraAcao == "Ativa")
+                                {
+                                    QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Ativa = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Ativa + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+                                    QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+
+                                    PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Ativa = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Ativa + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+                                    PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+
+                                    PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Ativa = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Ativa + PrecoLiquidoTotal;
+                                    PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total + PrecoLiquidoTotal;
+                                }
+                                else if($BancoDeDados_Acoes[i].CorretoraAcao == "BB")
+                                {
+                                    QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].BB = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].BB + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+                                    QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+                                    
+                                    PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].BB = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].BB + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+                                    PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+
+                                    PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].BB = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].BB + PrecoLiquidoTotal;
+                                    PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total + PrecoLiquidoTotal;
+                                }
+                                else if($BancoDeDados_Acoes[i].CorretoraAcao == "Bradesco")
+                                {
+                                    QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Bradesco = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Bradesco + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+                                    QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+
+                                    PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Bradesco = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Bradesco + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+                                    PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+
+                                    PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Bradesco = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Bradesco + PrecoLiquidoTotal;
+                                    PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total + PrecoLiquidoTotal;
+                                }
+                                else if($BancoDeDados_Acoes[i].CorretoraAcao == "Rico")
+                                {
+                                    QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Rico = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Rico + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+                                    QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+
+                                    PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Rico = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Rico + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+                                    PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+
+                                    PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Rico = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Rico + PrecoLiquidoTotal;
+                                    PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total + PrecoLiquidoTotal;
+                                }
+                            }
+                        }
+                        if(!AchouNome)
+                        {
+                            //Não achou o nome
+                            NomeAcoes[NomeAcoes.length]=$BancoDeDados_Acoes[i].NomeAcao;
+                            QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao] = {Ativa: 0, BB: 0, Bradesco: 0, Rico: 0, Total: 0};
+                            PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao] = {Ativa: 0, BB: 0, Bradesco: 0, Rico: 0, Total: 0};
+                            PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao] = {Ativa: 0, BB: 0, Bradesco: 0, Rico: 0, Total: 0};
+                            //adiciona o valor
+                            if($BancoDeDados_Acoes[i].CorretoraAcao == "Ativa")
+                            {
+                                QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Ativa = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Ativa + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+                                QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+
+                                PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Ativa = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Ativa + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+                                PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+
+                                PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Ativa = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Ativa + PrecoLiquidoTotal;
+                                PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total + PrecoLiquidoTotal;
+                            }
+                            else if($BancoDeDados_Acoes[i].CorretoraAcao == "BB")
+                            {
+                                QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].BB = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].BB + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+                                QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+
+                                PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].BB = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].BB + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+                                PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+
+                                PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].BB = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].BB + PrecoLiquidoTotal;
+                                PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total + PrecoLiquidoTotal;
+                            }
+                            else if($BancoDeDados_Acoes[i].CorretoraAcao == "Bradesco")
+                            {
+                                QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Bradesco = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Bradesco + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+                                QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+
+                                PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Bradesco = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Bradesco + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+                                PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+
+                                PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Bradesco = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Bradesco + PrecoLiquidoTotal;
+                                PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total + PrecoLiquidoTotal;
+                            }
+                            else if($BancoDeDados_Acoes[i].CorretoraAcao == "Rico")
+                            {
+                                QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Rico = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Rico + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+                                QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total = QuantidadesAcoes[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+
+                                PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Rico = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Rico + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+                                PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesNF[$BancoDeDados_Acoes[i].NomeAcao].Total + parseInt($BancoDeDados_Acoes[i].QuantidadeRestante)*parseFloat($BancoDeDados_Acoes[i].CustoAcao);
+
+                                PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Rico = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Rico + PrecoLiquidoTotal;
+                                PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total = PonderacoesAcoesCusto[$BancoDeDados_Acoes[i].NomeAcao].Total + PrecoLiquidoTotal;
+                            }
+                        }
+                    }
+                }
+                NomeAcoes.sort();
+                /*console.log(NomeAcoes)
+                console.log(QuantidadesAcoes)
+                console.log(PonderacoesAcoesNF)
+                console.log(PonderacoesAcoesCusto)*/
+
+                //Criando as divs
+                var TextoDiv ="";
+                for (i=0; i<NomeAcoes.length; i++)
+                {
+                    TextoDiv = TextoDiv + 
+                    "<div id='"+NomeAcoes[i]+"' style='grid-template-row: 1fr 1fr 1fr 1fr 1fr; display: grid'>"+
+                        "<div style='grid-template-columns: 1fr 1fr 1fr 1fr; display: grid'>"+
+                            "<div>"+
+                                "Nome da Ação : " +NomeAcoes[i]+"<br>"+
+                            "</div>"+
+                            "<div> <!-- Div Vazia --> </div>"+
+                            "<div style='text-align: center;'> Média Ponderada (da Nota Fiscal)</div>"+
+                            "<div style='text-align: center;'> Média Ponderada (custo da compra)</div>"+
+                        "</div>"+
+                        "<div style='grid-template-columns: 1fr 1fr 1fr 1fr; display: grid;'>"+
+                            "<div> <!-- Div Vazia --> </div>"+
+                            "<div>"+
+                                "Quantidade Total: "+QuantidadesAcoes[NomeAcoes[i]].Total+
+                            "</div>"+
+                            "<div style='text-align: center;'>"+
+                                "Total: "+(PonderacoesAcoesNF[NomeAcoes[i]].Total/QuantidadesAcoes[NomeAcoes[i]].Total).toFixed(3)+
+                            "</div>"+
+                            "<div style='text-align: center;'>"+
+                                "Total: "+(PonderacoesAcoesCusto[NomeAcoes[i]].Total/QuantidadesAcoes[NomeAcoes[i]].Total).toFixed(4)+
+                            "</div>"+
+                        "</div>"+    
+                        "<div style='grid-template-columns: 1fr 1fr 1fr 1fr; display: grid;background-color:lightgray'>"+
+                            "<div>"+
+                                "Corretora : Ativa "+
+                            "</div>"+
+                            "<div>"+
+                                "Quantidade : "+QuantidadesAcoes[NomeAcoes[i]].Ativa+
+                            "</div>"+
+                            "<div style='text-align: center;'>"+
+                                "Ativa: "+(PonderacoesAcoesNF[NomeAcoes[i]].Ativa/QuantidadesAcoes[NomeAcoes[i]].Ativa).toFixed(3)+
+                            "</div>"+
+                            "<div style='text-align: center;'>"+
+                                "Ativa: "+(PonderacoesAcoesCusto[NomeAcoes[i]].Ativa/QuantidadesAcoes[NomeAcoes[i]].Ativa).toFixed(4)+
+                            "</div>"+
+                        "</div>"+ 
+                        "<div style='grid-template-columns: 1fr 1fr 1fr 1fr; display: grid'>"+
+                            "<div>"+
+                                "Corretora : Banco do Brasil "+"<br>"+
+                            "</div>"+
+                            "<div>"+
+                                "Quantidade : "+QuantidadesAcoes[NomeAcoes[i]].BB+"<br>"+
+                            "</div>"+
+                            "<div style='text-align: center;'>"+
+                                "BB: "+(PonderacoesAcoesNF[NomeAcoes[i]].BB/QuantidadesAcoes[NomeAcoes[i]].BB).toFixed(3)+
+                            "</div>"+
+                            "<div style='text-align: center;'>"+
+                                "BB: "+(PonderacoesAcoesCusto[NomeAcoes[i]].BB/QuantidadesAcoes[NomeAcoes[i]].BB).toFixed(4)+
+                            "</div>"+
+                        "</div>"+  
+                        "<div style='grid-template-columns: 1fr 1fr 1fr 1fr; display: grid; background-color:lightgray'>"+
+                            "<div>"+
+                                "Corretora : Bradesco "+"<br>"+
+                            "</div>"+
+                            "<div>"+
+                                "Quantidade : "+QuantidadesAcoes[NomeAcoes[i]].Bradesco+"<br>"+
+                            "</div>"+
+                            "<div style='text-align: center;'>"+
+                                "Bradesco: "+(PonderacoesAcoesNF[NomeAcoes[i]].Bradesco/QuantidadesAcoes[NomeAcoes[i]].Bradesco).toFixed(3)+
+                            "</div>"+
+                            "<div style='text-align: center;'>"+
+                                "Bradesco: "+(PonderacoesAcoesCusto[NomeAcoes[i]].Bradesco/QuantidadesAcoes[NomeAcoes[i]].Bradesco).toFixed(4)+
+                            "</div>"+
+                        "</div>"+  
+                        "<div style='grid-template-columns: 1fr 1fr 1fr 1fr; display: grid'>"+
+                            "<div>"+
+                                "Corretora : Rico "+"<br>"+
+                            "</div>"+
+                            "<div>"+
+                                "Quantidade : "+QuantidadesAcoes[NomeAcoes[i]].Rico+"<br>"+
+                            "</div>"+
+                            "<div style='text-align: center;'>"+
+                                "Rico: "+(PonderacoesAcoesNF[NomeAcoes[i]].Rico/QuantidadesAcoes[NomeAcoes[i]].Rico).toFixed(3)+
+                            "</div>"+
+                            "<div style='text-align: center;'>"+
+                                "Rico: "+(PonderacoesAcoesCusto[NomeAcoes[i]].Rico/QuantidadesAcoes[NomeAcoes[i]].Rico).toFixed(4)+
+                            "</div>"+
+                        "</div>"+  
+                    "</div>"+
+                    "<br><br>";
+                }
+                document.getElementById("AcoesResumidas").innerHTML=TextoDiv;
+
+                TextoDiv = 
+                "<br>"+
+                "<h2 style='padding:0px; margin:0px;'>Menu de Navegação das Ações</h2>"+
+                "<ul>";
+                for (i=0; i<NomeAcoes.length; i++)
+                {
+                    TextoDiv = TextoDiv + "<li><a href='#"+NomeAcoes[i]+"'>"+NomeAcoes[i]+"</a></li>";
+                }
+                TextoDiv = TextoDiv + 
+                "</ul>"+
+                "<br>";
+                document.getElementById("NavAcoes").innerHTML=TextoDiv;
+            }
+        
+        </script>
+    </body>
+</html>

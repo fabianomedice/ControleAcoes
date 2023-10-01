@@ -1,0 +1,805 @@
+<!DOCTYPE html> 
+
+<html lang="pt-br" style="scroll-behavior: smooth;">
+	<head>
+		<!-- Titulo da aba-->
+		<title> 
+			Controle de Ações de Vanderlei
+		</title>
+		<!-- Metadados -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="author" content="Fabiano Médice">
+        <link rel="stylesheet" type="text/css" href="CSS/style.css">
+	</head>
+	<body>
+        <header>
+            <nav class="menu">
+                <div class="menu-dropdown PaginaAtiva">
+                    <button class="botao-dropdown">Consultas</button>
+                    <div class="conteudo-dropdown">
+                        <a href="resumo.html">Carteira de Ações Atuais</a>
+                        <a href="controlelucroprejuizo.html">Controle de Lucro e Prejuízo</a>
+                        <a href="historico.html">Histórico de Notas Fiscais</a>
+                        <a href="imposto.html">Imposto Devido Mensal</a>
+                    </div>
+                </div>    
+                <div class="menu-dropdown">
+                    <button class="botao-dropdown">Cadastros</button>
+                    <div class="conteudo-dropdown">
+                        <a href="compra.html">Compra de Ações</a>
+                        <a href="venda.html">Venda de Ações</a>
+                        <a href="notafiscal.html">Nota Fiscal</a>
+                    </div>
+                </div>    
+                <div class="menu-dropdown">
+                    <button class="botao-dropdown">Modificações</button>
+                    <div class="conteudo-dropdown">
+                        <a href="mudancavenda.html">Modificar Venda</a>
+                        <a href="cancelarcadastro.html">Cancelar Cadastro</a>
+                    </div>
+                </div>
+                <div class="menu-dropdown" >
+                    <button class="botao-dropdown" onclick="window.location.href='index.html';">Sobre</button>
+                </div>
+            </nav>
+            <h1 id="titulo">Imposto Devido Mensal</h1>     
+        </header>
+        
+        <section >
+            <div style="text-align: center;">
+                <br>
+                Selecione o mês : 
+                <select name="Duracao" id="Mes" style="height: 21px; width: 145px;" onchange="MudancaDuracao()">
+                    <option value="01">Janeiro</option>
+                    <option value="02">Fevereiro</option>
+                    <option value="03">Março</option>
+                    <option value="04">Abril</option>
+                    <option value="05">Maio</option>
+                    <option value="06">Junho</option>
+                    <option value="07">Julho</option>
+                    <option value="08">Agosto</option>
+                    <option value="09">Setembro</option>
+                    <option value="10">Outubro</option>
+                    <option value="11">Novembro</option>
+                    <option value="12">Dezembro</option>
+                </select>
+                Digite o ano : 
+                <input type="number" id="Ano" onchange="MudancaDuracao()">
+            </div>
+            <div style="grid-template-rows: 1fr; display: grid;">
+                <div style="grid-template-columns: 1fr 20fr 1fr 20fr 1fr; display: grid; text-align: center;">
+                    <div><!-- DivVazia --></div>
+                    <div><h2>Operação à Vista</h2></div>
+                    <div><!-- DivVazia --></div>
+                    <div><h2>Operação DayTrade</h2></div>
+                </div>
+            </div>
+            <div style="grid-template-rows: 1fr; display: grid;">
+                <div style="grid-template-columns: 1fr 20fr 1fr 20fr 1fr; display: grid; text-align: center;">
+                    <div><!-- DivVazia --></div>
+                    <div style="grid-template-columns: repeat(6,1fr); display: grid; text-align: center;">
+                        <div>
+                            <b>Data</b>
+                        </div>
+                        <div>
+                            <b>Valor Venda Bruta NF</b>
+                        </div>
+                        <div>
+                            <b>Valor Venda Líquida</b>
+                        </div>
+                        <div>
+                            <b>Valor Custo Compra</b>
+                        </div>
+                        <div>
+                            <b>Lucro</b>
+                        </div>
+                        <div>
+                            <b>I.R.R.F</b>
+                        </div>
+                    </div>
+                    <div><!-- DivVazia --></div>
+                    <div style="grid-template-columns: repeat(6,1fr); display: grid; text-align: center;">
+                        <div>
+                            <b>Data</b>
+                        </div>
+                        <div>
+                            <b>Valor Venda Bruta NF</b>
+                        </div>
+                        <div>
+                            <b>Valor Venda Líquida</b>
+                        </div>
+                        <div>
+                            <b>Valor Custo Compra</b>
+                        </div>
+                        <div>
+                            <b>Lucro</b>
+                        </div>
+                        <div>
+                            <b>I.R.R.F</b>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="Total"></div>
+            <br>
+            <div style="grid-template-columns: 1fr 20fr 1fr 20fr 1fr; display: grid; text-align: center;">
+                <div><!-- DivVazia --></div>
+                <div id="ControleAvista"></div>
+                <div><!-- DivVazia --></div>
+                <div id="ControleDayTrade"></div>
+            </div>
+            
+                    
+            <br><br>
+                
+        </section>
+        <footer>
+            <b>Feito por Fabiano Médice<br>2020</b>
+        </footer>
+        <script>
+
+            //Cria a data
+            var Ano = new Date().getFullYear();
+            var Mes = new Date().getMonth()+1;
+            var DataInicial = Ano+"-"+Mes+"-01";
+            var DataFinal = Ano+"-"+Mes+"-31"
+
+            document.getElementById("Mes").value=Mes;
+            document.getElementById("Ano").value=Ano;
+
+            //Iniciação
+            var $BancoDeDados_Valores_aVista = 
+                [
+                    {Dia:"01",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"02",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"03",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"04",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"05",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"06",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"07",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"08",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"09",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"10",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"11",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"12",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"13",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"14",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"15",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"16",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"17",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"18",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"19",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"20",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"21",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"22",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"23",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"24",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"25",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"26",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"27",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"28",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"29",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"30",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"31",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,}
+                ];
+                var $BancoDeDados_Valores_DayTrade = 
+                [
+                    {Dia:"01",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"02",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"03",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"04",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"05",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"06",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"07",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"08",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"09",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"10",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"11",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"12",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"13",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"14",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"15",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"16",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"17",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"18",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"19",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"20",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"21",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"22",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"23",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"24",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"25",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"26",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"27",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"28",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"29",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"30",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"31",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,}
+                ];                
+            Chamar_Banco_De_Dados_Acoes();
+
+            // -------------------------------------------------------
+            //Função chamar a data do banco de dados
+            // -------------------------------------------------------
+            function MudancaDuracao()
+            {
+                //modifica o mês e data
+                Ano = document.getElementById("Ano").value;
+                Mes = document.getElementById("Mes").value;
+                DataInicial = Ano+"-"+Mes+"-01";
+                DataFinal = Ano+"-"+Mes+"-31"
+
+                //Iniciação
+                $BancoDeDados_Valores_aVista = 
+                [
+                    {Dia:"01",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"02",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"03",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"04",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"05",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"06",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"07",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"08",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"09",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"10",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"11",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"12",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"13",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"14",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"15",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"16",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"17",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"18",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"19",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"20",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"21",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"22",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"23",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"24",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"25",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"26",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"27",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"28",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"29",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"30",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"31",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,}
+                ];
+                $BancoDeDados_Valores_DayTrade = 
+                [
+                    {Dia:"01",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"02",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"03",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"04",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"05",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"06",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"07",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"08",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"09",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"10",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"11",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"12",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"13",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"14",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"15",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"16",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"17",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"18",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"19",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"20",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"21",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"22",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"23",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"24",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"25",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"26",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"27",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"28",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"29",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"30",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,},
+                    {Dia:"31",IRRF: 0, VendaBruta_Total: 0, ValorLiquidoCompra_Total: 0, ValorLiquidoCompra_Ativa: 0, ValorLiquidoCompra_BB: 0, ValorLiquidoCompra_Bradesco: 0, ValorLiquidoCompra_Rico: 0, ValorLiquidoVenda_Total: 0, ValorLiquidoVenda_Ativa: 0, ValorLiquidoVenda_BB: 0, ValorLiquidoVenda_Bradesco: 0, ValorLiquidoVenda_Rico: 0,}
+                ];                
+            Chamar_Banco_De_Dados_Acoes();
+            }
+
+            // -------------------------------------------------------
+            //Função para ler o banco de dados de compras
+            // -------------------------------------------------------
+            function Chamar_Banco_De_Dados_Acoes()
+            {
+                // Chama a leitura para o servidor
+                var xhttp;
+                xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() 
+                {
+                    if (this.readyState == 4 && this.status == 200) 
+                    {
+                        if(this.responseText == "Nenhuma Ação Encontrada")
+                        {
+                            console.log('Erro: Nenhum Ação Encontrada')
+                        }
+                        else
+                        {
+                            $BancoDeDados_Acoes = JSON.parse(this.responseText);
+                            Ler_NF();
+                        }
+                    }
+                }
+                xhttp.open("POST", "PHP/LucroPrejuizo.php", false); //o false não deixa ser assincrono
+                xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhttp.send("DataInicial="+DataInicial+"&DataFinal="+DataFinal);
+            }
+
+            // -------------------------------------------------------
+            //Função para ler o banco de dados de Notas Fiscais
+            // -------------------------------------------------------
+            function Ler_NF()
+            {
+                // Chama a leitura para o servidor
+                var xhttp;
+                xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() 
+                {
+                    if (this.readyState == 4 && this.status == 200) 
+                    {
+                        if(this.responseText == "Nenhuma Nota Fiscal Encontrada")
+                        {
+                            console.log('Erro: Nenhum Nota Fiscal Encontrada')
+                        }
+                        else
+                        {
+                            $BancoDeDados_NF = JSON.parse(this.responseText);
+                        }
+                        OrganizaBancoDeDados();
+                    }
+                }
+                xhttp.open("GET", "PHP/LerNF.php", false); //o false não deixa ser assincrono
+                xhttp.send();
+            }
+            // -------------------------------------------------------
+            // Organiza o Banco de Dados Enviados e cria divs
+            // -------------------------------------------------------
+            function OrganizaBancoDeDados()
+            {
+                //organiza o banco de dados
+                multiSort($BancoDeDados_Acoes, {Operacao: 'asc', Data: 'asc', NomeAcao: 'asc', CodigoAcao: 'asc'})
+                multiSort($BancoDeDados_NF, {Data: 'asc', CorretoraNF: 'asc'})
+
+                //Atualiza o Banco de dados de valores liquidos
+                for (i=0;i<$BancoDeDados_Acoes.length;i++)
+                {
+                    if($BancoDeDados_Acoes[i].Operacao == "Venda" && $BancoDeDados_Acoes[i].Data>=DataInicial && $BancoDeDados_Acoes[i].Data<=DataFinal)
+                    {
+                        //Só pega as vendas
+                        var QuantidadeNF = $BancoDeDados_NF.length; //teste para conferencia de Nota Fiscal
+                        //Calculo do preço líquido
+                        for(j=0;j<$BancoDeDados_NF.length;j++)
+                        {
+                            if($BancoDeDados_Acoes[i].Data == $BancoDeDados_NF[j].Data && $BancoDeDados_Acoes[i].CorretoraAcao == $BancoDeDados_NF[j].CorretoraNF && $BancoDeDados_Acoes[i].NotaFiscalAcao == $BancoDeDados_NF[j].NotaFiscal)
+                            {
+                                var CustoTotalOperacao = $BancoDeDados_NF[j].CustoTotalOperacao;
+                                var ValorOperacoesTotais = $BancoDeDados_NF[j].ValorOperacoesTotais;
+                            }
+                            else
+                            {
+                                //Não achou a Nota Fiscal
+                                QuantidadeNF = QuantidadeNF-1;
+                                if(QuantidadeNF==0)
+                                {
+                                    //não achou a Nota Fiscal
+                                    var CustoTotalOperacao = 0;
+                                    var ValorOperacoesTotais = 0;
+                                }
+                            }
+                        }
+                        //Preço liquido da venda = Subtrai o custo da operação
+                        var VendaBruta = $BancoDeDados_Acoes[i].Custo*$BancoDeDados_Acoes[i].QuantidadeTotal;
+                        PrecoLiquidoTotal_Venda = (VendaBruta-$BancoDeDados_Acoes[i].QuantidadeTotal*$BancoDeDados_Acoes[i].Custo/ValorOperacoesTotais*CustoTotalOperacao).toFixed(2);
+
+                        //Confere se não é DayTrade
+                        EhDaytrade = false;
+                        for(j=0;j<$BancoDeDados_Acoes.length;j++)
+                        {
+                            if
+                            (
+                                $BancoDeDados_Acoes[j].Operacao=="DayTrade" && //Confere se a operação a ser comparada é Dray trade
+                                $BancoDeDados_Acoes[i].NomeAcao == $BancoDeDados_Acoes[j].NomeAcao && //Confere se os nomes são os mesmos
+                                $BancoDeDados_Acoes[i].CodigoAcao == $BancoDeDados_Acoes[j].CodigoAcao && //Confere se os codigos são os mesmos
+                                $BancoDeDados_Acoes[i].CorretoraAcao == $BancoDeDados_Acoes[j].CorretoraAcao && //Confere se a corretora é a mesma
+                                $BancoDeDados_Acoes[i].Data == $BancoDeDados_Acoes[j].Data && //Confere se as datas são as mesmas
+                                $BancoDeDados_Acoes[i].NotaFiscalAcao == $BancoDeDados_Acoes[j].NotaFiscalAcao //Confere se as notas fiscais são as mesmas
+                            )
+                            {
+                                //console.log("É daytrade - "+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao)
+                                EhDaytrade = true;
+                            }
+                            
+                            //Procura a compra desta ação de venda
+                            if
+                            (
+                                $BancoDeDados_Acoes[j].Operacao == "Compra" && //confere se a operação a ser comparada é Compra
+                                $BancoDeDados_Acoes[i].NomeAcao == $BancoDeDados_Acoes[j].NomeAcao && //Confere se os nomes são os mesmos
+                                $BancoDeDados_Acoes[i].CodigoAcao == $BancoDeDados_Acoes[j].CodigoAcao && //Confere se os codigos são os mesmos
+                                $BancoDeDados_Acoes[i].CorretoraAcao == $BancoDeDados_Acoes[j].CorretoraAcao //Confere se a corretora é a mesma
+                            )
+                            {
+                                var QuantidadeNF = $BancoDeDados_NF.length; //teste para conferencia de Nota Fiscal
+                                //Calculo do preço líquido
+                                for(k=0;k<$BancoDeDados_NF.length;k++)
+                                {
+                                    if($BancoDeDados_Acoes[j].Data == $BancoDeDados_NF[k].Data && $BancoDeDados_Acoes[j].CorretoraAcao == $BancoDeDados_NF[k].CorretoraNF && $BancoDeDados_Acoes[j].NotaFiscalAcao == $BancoDeDados_NF[k].NotaFiscal)
+                                    {
+                                        var CustoTotalOperacao = $BancoDeDados_NF[k].CustoTotalOperacao;
+                                        var ValorOperacoesTotais = $BancoDeDados_NF[k].ValorOperacoesTotais;
+                                    }
+                                    else
+                                    {
+                                        //Não achou a Nota Fiscal
+                                        QuantidadeNF = QuantidadeNF-1;
+                                        if(QuantidadeNF==0)
+                                        {
+                                            //não achou a Nota Fiscal
+                                            var CustoTotalOperacao = 0;
+                                            var ValorOperacoesTotais = 0;
+                                        }
+                                    }
+                                }
+                                //Preço liquido da compra = Soma o custo da operação
+                                PrecoLiquidoTotal_Compra = (($BancoDeDados_Acoes[j].Custo*$BancoDeDados_Acoes[j].QuantidadeTotal+$BancoDeDados_Acoes[j].QuantidadeTotal*$BancoDeDados_Acoes[j].Custo/ValorOperacoesTotais*CustoTotalOperacao)/$BancoDeDados_Acoes[j].QuantidadeTotal*$BancoDeDados_Acoes[i].QuantidadeTotal).toFixed(2);
+                            }
+                        }
+
+                        if(EhDaytrade)
+                        {
+                            //pega Data
+                            var DiaAnalisado = parseInt($BancoDeDados_Acoes[i].Data.slice(-2));
+                            //Salva Valor Liquido da Compra
+                            $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].ValorLiquidoCompra_Total= $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].ValorLiquidoCompra_Total + parseFloat(PrecoLiquidoTotal_Compra);
+                            //Salva Valor Liquido da Venda
+                            $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].ValorLiquidoVenda_Total= $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].ValorLiquidoVenda_Total + parseFloat(PrecoLiquidoTotal_Venda);
+                            //Salva Valor Bruto da Venda
+                            $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].VendaBruta_Total = $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].VendaBruta_Total + VendaBruta;
+
+                            switch ($BancoDeDados_Acoes[i].CorretoraAcao)
+                            {
+                                case "Ativa":
+                                    //compra
+                                    $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].ValorLiquidoCompra_Ativa = $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].ValorLiquidoCompra_Ativa + parseFloat(PrecoLiquidoTotal_Compra);
+                                    //venda
+                                    $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].ValorLiquidoVenda_Ativa = $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].ValorLiquidoVenda_Ativa + + parseFloat(PrecoLiquidoTotal_Venda);
+                                break;
+                                case "BB":
+                                    //compra
+                                    $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].ValorLiquidoCompra_BB = $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].ValorLiquidoCompra_BB + parseFloat(PrecoLiquidoTotal_Compra);
+                                    //venda
+                                    $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].ValorLiquidoVenda_BB = $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].ValorLiquidoVenda_BB + + parseFloat(PrecoLiquidoTotal_Venda);
+                                break;
+                                case "Bradesco":
+                                    //compra
+                                    $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].ValorLiquidoCompra_Bradesco = $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].ValorLiquidoCompra_Bradesco + parseFloat(PrecoLiquidoTotal_Compra);
+                                    //venda
+                                    $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].ValorLiquidoVenda_Bradesco = $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].ValorLiquidoVenda_Bradesco + parseFloat(PrecoLiquidoTotal_Venda);
+                                break;
+                                case "Rico":
+                                    //compra
+                                    $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].ValorLiquidoCompra_Rico = $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].ValorLiquidoCompra_Rico + parseFloat(PrecoLiquidoTotal_Compra);
+                                    //venda
+                                    $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].ValorLiquidoVenda_Rico = $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].ValorLiquidoVenda_Rico + + parseFloat(PrecoLiquidoTotal_Venda);
+                                break;
+                                default:
+                            }
+                        }
+                        else
+                        {
+                            //não é DayTrade
+                            //pega Data
+                            var DiaAnalisado = parseInt($BancoDeDados_Acoes[i].Data.slice(-2));
+                            //Salva Valor Liquido a da Compra
+                            $BancoDeDados_Valores_aVista[DiaAnalisado-1].ValorLiquidoCompra_Total= $BancoDeDados_Valores_aVista[DiaAnalisado-1].ValorLiquidoCompra_Total + parseFloat(PrecoLiquidoTotal_Compra);
+                            //Salva Valor Liquido a da Venda
+                            $BancoDeDados_Valores_aVista[DiaAnalisado-1].ValorLiquidoVenda_Total= $BancoDeDados_Valores_aVista[DiaAnalisado-1].ValorLiquidoVenda_Total + parseFloat(PrecoLiquidoTotal_Venda);
+                            //Salva Valor Bruto da Venda
+                            $BancoDeDados_Valores_aVista[DiaAnalisado-1].VendaBruta_Total = $BancoDeDados_Valores_aVista[DiaAnalisado-1].VendaBruta_Total + VendaBruta;
+
+                            switch ($BancoDeDados_Acoes[i].CorretoraAcao)
+                            {
+                                case "Ativa":
+                                    //compra
+                                    $BancoDeDados_Valores_aVista[DiaAnalisado-1].ValorLiquidoCompra_Ativa = $BancoDeDados_Valores_aVista[DiaAnalisado-1].ValorLiquidoCompra_Ativa + parseFloat(PrecoLiquidoTotal_Compra);
+                                    //venda
+                                    $BancoDeDados_Valores_aVista[DiaAnalisado-1].ValorLiquidoVenda_Ativa = $BancoDeDados_Valores_aVista[DiaAnalisado-1].ValorLiquidoVenda_Ativa + + parseFloat(PrecoLiquidoTotal_Venda);
+                                break;
+                                case "BB":
+                                    //compra
+                                    $BancoDeDados_Valores_aVista[DiaAnalisado-1].ValorLiquidoCompra_BB = $BancoDeDados_Valores_aVista[DiaAnalisado-1].ValorLiquidoCompra_BB + parseFloat(PrecoLiquidoTotal_Compra);
+                                    //venda
+                                    $BancoDeDados_Valores_aVista[DiaAnalisado-1].ValorLiquidoVenda_BB = $BancoDeDados_Valores_aVista[DiaAnalisado-1].ValorLiquidoVenda_BB + + parseFloat(PrecoLiquidoTotal_Venda);
+                                break;
+                                case "Bradesco":
+                                    //compra
+                                    $BancoDeDados_Valores_aVista[DiaAnalisado-1].ValorLiquidoCompra_Bradesco = $BancoDeDados_Valores_aVista[DiaAnalisado-1].ValorLiquidoCompra_Bradesco + parseFloat(PrecoLiquidoTotal_Compra);
+                                    //venda
+                                    $BancoDeDados_Valores_aVista[DiaAnalisado-1].ValorLiquidoVenda_Bradesco = $BancoDeDados_Valores_aVista[DiaAnalisado-1].ValorLiquidoVenda_Bradesco + parseFloat(PrecoLiquidoTotal_Venda);
+                                break;
+                                case "Rico":
+                                    //compra
+                                    $BancoDeDados_Valores_aVista[DiaAnalisado-1].ValorLiquidoCompra_Rico = $BancoDeDados_Valores_aVista[DiaAnalisado-1].ValorLiquidoCompra_Rico + parseFloat(PrecoLiquidoTotal_Compra);
+                                    //venda
+                                    $BancoDeDados_Valores_aVista[DiaAnalisado-1].ValorLiquidoVenda_Rico = $BancoDeDados_Valores_aVista[DiaAnalisado-1].ValorLiquidoVenda_Rico + + parseFloat(PrecoLiquidoTotal_Venda);
+                                break;
+                                default:
+                            }
+                        }
+                    }
+                }
+                //Calcula o IRRF
+                for(k=0;k<$BancoDeDados_NF.length;k++)
+                {
+                    //Confere se o ano e mês bate com o escolhido
+                    if($BancoDeDados_NF[k].Data.slice(0,4) == document.getElementById("Ano").value && $BancoDeDados_NF[k].Data.slice(5,7) == document.getElementById("Mes").value)
+                    {
+                        //Mesmo ano e mês
+                        DiaAnalisado = parseInt($BancoDeDados_NF[k].Data.slice(-2));
+
+                        $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].IRRF = $BancoDeDados_Valores_DayTrade[DiaAnalisado-1].IRRF + parseFloat($BancoDeDados_NF[k].IRRFDayTrade);
+                        $BancoDeDados_Valores_aVista[DiaAnalisado-1].IRRF = $BancoDeDados_Valores_aVista[DiaAnalisado-1].IRRF + parseFloat($BancoDeDados_NF[k].IRRFvista);
+                    }
+                }
+
+                //Cria as divisões
+                NumeroLinha = 1;
+                textoAVista = "";
+                textoDayTrade = "";
+                VendaBruta_TotalMes_aVista = 0;
+                ValorLiquidoVenda_TotalMes_aVista = 0;
+                ValorLiquidoCompra_TotalMes_aVista = 0;
+                IRRF_TotalMes_aVista = 0;
+                VendaBruta_TotalMes_DayTrade = 0;
+                ValorLiquidoVenda_TotalMes_DayTrade = 0;
+                ValorLiquidoCompra_TotalMes_DayTrade = 0;
+                IRRF_TotalMes_DayTrade = 0;
+
+                for (i=0;i<$BancoDeDados_Valores_aVista.length;i++)
+                {
+                    //Adiciona os valores pro total
+                    VendaBruta_TotalMes_aVista = VendaBruta_TotalMes_aVista + $BancoDeDados_Valores_aVista[i].VendaBruta_Total;
+                    ValorLiquidoVenda_TotalMes_aVista = ValorLiquidoVenda_TotalMes_aVista + $BancoDeDados_Valores_aVista[i].ValorLiquidoVenda_Total;
+                    ValorLiquidoCompra_TotalMes_aVista = ValorLiquidoCompra_TotalMes_aVista + $BancoDeDados_Valores_aVista[i].ValorLiquidoCompra_Total;
+                    IRRF_TotalMes_aVista = IRRF_TotalMes_aVista + $BancoDeDados_Valores_aVista[i].IRRF;
+                    VendaBruta_TotalMes_DayTrade = VendaBruta_TotalMes_DayTrade + $BancoDeDados_Valores_DayTrade[i].VendaBruta_Total;
+                    ValorLiquidoVenda_TotalMes_DayTrade = ValorLiquidoVenda_TotalMes_DayTrade + $BancoDeDados_Valores_DayTrade[i].ValorLiquidoVenda_Total;
+                    ValorLiquidoCompra_TotalMes_DayTrade = ValorLiquidoCompra_TotalMes_DayTrade + $BancoDeDados_Valores_DayTrade[i].ValorLiquidoCompra_Total;
+                    IRRF_TotalMes_DayTrade = IRRF_TotalMes_DayTrade + $BancoDeDados_Valores_DayTrade[i].IRRF;
+
+                    if(NumeroLinha%2==0)
+                    {
+                        //Linha Par, sem fundo
+                        textoAVista = textoAVista+
+                        '<div style="grid-template-rows: 1fr; display: grid;">'+
+                            '<div style="grid-template-columns: repeat(6,1fr); display: grid; text-align: center;">'+
+                                '<div>'+$BancoDeDados_Valores_aVista[i].Dia+"/"+Mes+"/"+Ano+'</div>'+
+                                '<div>'+($BancoDeDados_Valores_aVista[i].VendaBruta_Total*1).toFixed(2)+'</div>'+
+                                '<div>'+($BancoDeDados_Valores_aVista[i].ValorLiquidoVenda_Total*1).toFixed(2)+'</div>'+
+                                '<div>'+($BancoDeDados_Valores_aVista[i].ValorLiquidoCompra_Total*1).toFixed(2)+'</div>';
+                                if($BancoDeDados_Valores_aVista[i].ValorLiquidoVenda_Total-$BancoDeDados_Valores_aVista[i].ValorLiquidoCompra_Total>=0)
+                                {
+                                    //lucro
+                                    textoAVista = textoAVista+
+                                    '<div style="background-color:lightgreen">'+($BancoDeDados_Valores_aVista[i].ValorLiquidoVenda_Total-$BancoDeDados_Valores_aVista[i].ValorLiquidoCompra_Total).toFixed(2)+'</div>';
+                                }
+                                else
+                                {
+                                    //prejuizo
+                                    textoAVista = textoAVista+
+                                    '<div style="background-color:tomato">'+($BancoDeDados_Valores_aVista[i].ValorLiquidoVenda_Total-$BancoDeDados_Valores_aVista[i].ValorLiquidoCompra_Total).toFixed(2)+'</div>';
+                                }
+                                textoAVista = textoAVista+
+                                '<div>'+($BancoDeDados_Valores_aVista[i].IRRF*1).toFixed(2)+'</div>'+
+                            '</div>'+
+                        '</div>';
+
+                        textoDayTrade = textoDayTrade+
+                        '<div style="grid-template-rows: 1fr; display: grid;">'+
+                            '<div style="grid-template-columns: repeat(6,1fr); display: grid; text-align: center;">'+
+                                '<div>'+$BancoDeDados_Valores_DayTrade[i].Dia+"/"+Mes+"/"+Ano+'</div>'+
+                                '<div>'+($BancoDeDados_Valores_DayTrade[i].VendaBruta_Total*1).toFixed(2)+'</div>'+
+                                '<div>'+($BancoDeDados_Valores_DayTrade[i].ValorLiquidoVenda_Total*1).toFixed(2)+'</div>'+
+                                '<div>'+($BancoDeDados_Valores_DayTrade[i].ValorLiquidoCompra_Total*1).toFixed(2)+'</div>';
+                                if($BancoDeDados_Valores_DayTrade[i].ValorLiquidoVenda_Total-$BancoDeDados_Valores_DayTrade[i].ValorLiquidoCompra_Total>=0)
+                                {
+                                    //lucro
+                                    textoDayTrade = textoDayTrade+
+                                    '<div style="background-color:lightgreen">'+($BancoDeDados_Valores_DayTrade[i].ValorLiquidoVenda_Total-$BancoDeDados_Valores_DayTrade[i].ValorLiquidoCompra_Total).toFixed(2)+'</div>';
+                                }
+                                else
+                                {
+                                    //prejuizo
+                                    textoDayTrade = textoDayTrade+
+                                    '<div style="background-color:tomato">'+($BancoDeDados_Valores_DayTrade[i].ValorLiquidoVenda_Total-$BancoDeDados_Valores_DayTrade[i].ValorLiquidoCompra_Total).toFixed(2)+'</div>';
+                                }
+                                textoDayTrade = textoDayTrade+
+                                '<div>'+($BancoDeDados_Valores_DayTrade[i].IRRF*1).toFixed(2)+'</div>'+
+                            '</div>'+
+                        '</div>';
+
+                        NumeroLinha = NumeroLinha +1;
+                    }
+                    else
+                    {
+                        //Linha impar, com fundo
+                        textoAVista = textoAVista+
+                        '<div style="grid-template-rows: 1fr; display: grid;">'+
+                            '<div style="grid-template-columns: repeat(6,1fr); display: grid; text-align: center;background-color:lightgray">'+
+                                '<div>'+$BancoDeDados_Valores_aVista[i].Dia+"/"+Mes+"/"+Ano+'</div>'+
+                                '<div>'+($BancoDeDados_Valores_aVista[i].VendaBruta_Total*1).toFixed(2)+'</div>'+
+                                '<div>'+($BancoDeDados_Valores_aVista[i].ValorLiquidoVenda_Total*1).toFixed(2)+'</div>'+
+                                '<div>'+($BancoDeDados_Valores_aVista[i].ValorLiquidoCompra_Total*1).toFixed(2)+'</div>';
+                                if($BancoDeDados_Valores_aVista[i].ValorLiquidoVenda_Total-$BancoDeDados_Valores_aVista[i].ValorLiquidoCompra_Total>=0)
+                                {
+                                    //lucro
+                                    textoAVista = textoAVista+
+                                    '<div style="background-color:lightgreen">'+($BancoDeDados_Valores_aVista[i].ValorLiquidoVenda_Total-$BancoDeDados_Valores_aVista[i].ValorLiquidoCompra_Total).toFixed(2)+'</div>';
+                                }
+                                else
+                                {
+                                    //prejuizo
+                                    textoAVista = textoAVista+
+                                    '<div style="background-color:tomato">'+($BancoDeDados_Valores_aVista[i].ValorLiquidoVenda_Total-$BancoDeDados_Valores_aVista[i].ValorLiquidoCompra_Total).toFixed(2)+'</div>';
+                                }
+                                textoAVista = textoAVista+
+                                '<div>'+($BancoDeDados_Valores_aVista[i].IRRF*1).toFixed(2)+'</div>'+
+                            '</div>'+
+                        '</div>';
+
+                        textoDayTrade = textoDayTrade+
+                        '<div style="grid-template-rows: 1fr; display: grid;">'+
+                            '<div style="grid-template-columns: repeat(6,1fr); display: grid; text-align: center;background-color:lightgray">'+
+                                '<div>'+$BancoDeDados_Valores_DayTrade[i].Dia+"/"+Mes+"/"+Ano+'</div>'+
+                                '<div>'+($BancoDeDados_Valores_DayTrade[i].VendaBruta_Total*1).toFixed(2)+'</div>'+
+                                '<div>'+($BancoDeDados_Valores_DayTrade[i].ValorLiquidoVenda_Total*1).toFixed(2)+'</div>'+
+                                '<div>'+($BancoDeDados_Valores_DayTrade[i].ValorLiquidoCompra_Total*1).toFixed(2)+'</div>';
+                                if($BancoDeDados_Valores_DayTrade[i].ValorLiquidoVenda_Total-$BancoDeDados_Valores_DayTrade[i].ValorLiquidoCompra_Total>=0)
+                                {
+                                    //lucro
+                                    textoDayTrade = textoDayTrade+
+                                    '<div style="background-color:lightgreen">'+($BancoDeDados_Valores_DayTrade[i].ValorLiquidoVenda_Total-$BancoDeDados_Valores_DayTrade[i].ValorLiquidoCompra_Total).toFixed(2)+'</div>';
+                                }
+                                else
+                                {
+                                    //prejuizo
+                                    textoDayTrade = textoDayTrade+
+                                    '<div style="background-color:tomato">'+($BancoDeDados_Valores_DayTrade[i].ValorLiquidoVenda_Total-$BancoDeDados_Valores_DayTrade[i].ValorLiquidoCompra_Total).toFixed(2)+'</div>';
+                                }
+                                textoDayTrade = textoDayTrade+
+                                '<div>'+($BancoDeDados_Valores_DayTrade[i].IRRF*1).toFixed(2)+'</div>'+
+                            '</div>'+
+                        '</div>';
+                        
+                        NumeroLinha = NumeroLinha +1;
+                    }
+                }
+                document.getElementById('ControleAvista').innerHTML = textoAVista;
+                document.getElementById('ControleDayTrade').innerHTML = textoDayTrade;
+
+                //Div Total
+                var texto = "";
+                texto = texto +
+
+                '<div style="grid-template-rows: 1fr; display: grid;">'+
+                    '<div style="grid-template-columns: 1fr 20fr 1fr 20fr 1fr; display: grid; text-align: center;">'+
+                        '<div><!-- DivVazia --></div>'+
+                        '<div style="grid-template-columns: repeat(6,1fr); display: grid; text-align: center;">'+
+                            '<div>Total do Mês</div>'+
+                            '<div>'+(VendaBruta_TotalMes_aVista*1).toFixed(2)+'</div>'+
+                            '<div>-</div>'+ //'<div>'+(ValorLiquidoVenda_TotalMes_aVista*1).toFixed(2)+'</div>'+
+                            '<div>-</div>'; //'<div>'+(ValorLiquidoCompra_TotalMes_aVista*1).toFixed(2)+'</div>';
+                            if(ValorLiquidoVenda_TotalMes_aVista-ValorLiquidoCompra_TotalMes_aVista>=0)
+                            {
+                                //lucro
+                                texto = texto+
+                                '<div style="background-color:lightgreen">'+(ValorLiquidoVenda_TotalMes_aVista-ValorLiquidoCompra_TotalMes_aVista).toFixed(2)+'</div>';
+                            }
+                            else
+                            {
+                                //prejuizo
+                                texto = texto+
+                                '<div style="background-color:tomato">'+(ValorLiquidoVenda_TotalMes_aVista-ValorLiquidoCompra_TotalMes_aVista).toFixed(2)+'</div>';
+                            }
+                            texto = texto+
+                            '<div>'+(IRRF_TotalMes_aVista*1).toFixed(2)+'</div>'+
+                        '</div>'+
+                        '<div><!-- DivVazia --></div>'+
+                        '<div style="grid-template-columns: repeat(6,1fr); display: grid; text-align: center;">'+
+                            '<div>Total do Mês</div>'+
+                            '<div>'+(VendaBruta_TotalMes_DayTrade*1).toFixed(2)+'</div>'+
+                            '<div>-</div>'+//'<div>'+(ValorLiquidoVenda_TotalMes_DayTrade*1).toFixed(2)+'</div>'+
+                            '<div>-</div>'; //'<div>'+(ValorLiquidoCompra_TotalMes_DayTrade*1).toFixed(2)+'</div>';
+                            if(ValorLiquidoVenda_TotalMes_DayTrade-ValorLiquidoCompra_TotalMes_DayTrade>=0)
+                            {
+                                //lucro
+                                texto = texto+
+                                '<div style="background-color:lightgreen">'+(ValorLiquidoVenda_TotalMes_DayTrade-ValorLiquidoCompra_TotalMes_DayTrade).toFixed(2)+'</div>';
+                            }
+                            else
+                            {
+                                //prejuizo
+                                texto = texto+
+                                '<div style="background-color:tomato">'+(ValorLiquidoVenda_TotalMes_DayTrade-ValorLiquidoCompra_TotalMes_DayTrade).toFixed(2)+'</div>';
+                            }
+                            texto = texto+
+                            '<div>'+(IRRF_TotalMes_DayTrade*1).toFixed(2)+'</div>'+
+                        '</div>'+
+                    '</div>'+
+                '</div>';
+                document.getElementById('Total').innerHTML = texto;
+
+            }
+
+
+
+
+
+
+
+
+            /** Fonte: <https://www.golangprograms.com/javascript-sort-multi-dimensional-array-on-specific-columns.html>
+            * Sorts an array of objects by column/property.
+            * @param {Array} array - The array of objects.
+            * @param {object} sortObject - The object that contains the sort order keys with directions (asc/desc). e.g. { age: 'desc', name: 'asc' }
+            * @returns {Array} The sorted array.
+            */
+            function multiSort(array, sortObject = {}) 
+            {
+                const sortKeys = Object.keys(sortObject);
+
+                // Return array if no sort object is supplied.
+                if (!sortKeys.length) 
+                {
+                    return array;
+                }
+
+                // Change the values of the sortObject keys to -1, 0, or 1.
+                for (let key in sortObject) 
+                {
+                    sortObject[key] = sortObject[key] === 'desc' || sortObject[key] === -1 ? -1 : (sortObject[key] === 'skip' || sortObject[key] === 0 ? 0 : 1);
+                }
+
+                const keySort = (a, b, direction) => 
+                { 
+                    direction = direction !== null ? direction : 1;
+
+                    if (a === b) 
+                    { // If the values are the same, do not switch positions.
+                        return 0;
+                    }
+
+                    // If b > a, multiply by -1 to get the reverse direction.
+                    return a > b ? direction : -1 * direction;
+                };
+
+                return array.sort((a, b) => 
+                {
+                    let sorted = 0;
+                    let index = 0;
+
+                    // Loop until sorted (-1 or 1) or until the sort keys have been processed.
+                    while (sorted === 0 && index < sortKeys.length) 
+                    {
+                        const key = sortKeys[index];
+
+                        if (key) 
+                        {
+                            const direction = sortObject[key];
+
+                            sorted = keySort(a[key], b[key], direction);
+                            index++;
+                        }
+                    }
+
+                    return sorted;
+                });
+            }
+
+        </script>
+    </body>
+</html>

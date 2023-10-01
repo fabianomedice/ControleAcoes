@@ -1,0 +1,801 @@
+<!DOCTYPE html> 
+
+<html lang="pt-br" style="scroll-behavior: smooth;">
+	<head>
+		<!-- Titulo da aba-->
+		<title> 
+			Controle de Ações de Vanderlei
+		</title>
+		<!-- Metadados -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="author" content="Fabiano Médice">
+        <link rel="stylesheet" type="text/css" href="CSS/style.css">
+	</head>
+	<body style="font-size: medium;">
+        <header>
+            <nav class="menu">
+                <div class="menu-dropdown">
+                    <button class="botao-dropdown">Consultas</button>
+                    <div class="conteudo-dropdown">
+                        <a href="resumo.html">Carteira de Ações Atuais</a>
+                        <a href="controlelucroprejuizo.html">Controle de Lucro e Prejuízo</a>
+                        <a href="historico.html">Histórico de Notas Fiscais</a>
+                        <a href="imposto.html">Imposto Devido Mensal</a>
+                    </div>
+                </div>    
+                <div class="menu-dropdown">
+                    <button class="botao-dropdown">Cadastros</button>
+                    <div class="conteudo-dropdown">
+                        <a href="compra.html">Compra de Ações</a>
+                        <a href="venda.html">Venda de Ações</a>
+                        <a href="notafiscal.html">Nota Fiscal</a>
+                    </div>
+                </div>    
+                <div class="menu-dropdown PaginaAtiva">
+                    <button class="botao-dropdown">Modificações</button>
+                    <div class="conteudo-dropdown">
+                        <a href="mudancavenda.html">Modificar Venda</a>
+                        <a href="cancelarcadastro.html">Cancelar Cadastro</a>
+                    </div>
+                </div>
+                <div class="menu-dropdown" >
+                    <button class="botao-dropdown" onclick="window.location.href='index.html';">Sobre</button>
+                </div>
+            </nav>
+            <h1 id="titulo">Modificar Venda Cadastrada no Sistema</h1>     
+        </header>
+        
+        <section >
+            <div>
+                <h2>Modificar Venda Cadastrada</h2>
+                <div style="grid-template-columns: 1fr 1fr; display: grid">
+                    <div style="grid-template-rows: 1fr; display: grid"> 
+                        <div style="text-align: right;">
+                            <label for="NomeAcaoVenda">Selecione a Ação vendida para realizar a mudança:</label><br><br>
+                            <label for="NomeAcaoVenda">Selecione a Ação disponível na carteira de Ações Atuais:</label><br><br>
+                            <label for="QuantidadeAcaoTransferida">Selecione a Quantidade de Ações que serão modificadas:</label><br><br>
+                        </div>
+                    </div>
+                    <div>
+                        <form method="POST" action="PHP/ModificaVenda.php" id="ModificaVenda">
+                            <select name="NomeAcaoVenda" id="NomeAcaoVenda" oninput="ColocaOpcoesDeTransferencia()">
+                                <!-- Opções por JavaScript-->
+                                <option value="NomeAcao"> Nome da Ação</option>
+                            </select><br><br>
+                            <select name="NomeAcaoCompra" id="NomeAcaoCompra" oninput="ColocaLimiteAcoes()">
+                                <!-- Opções por JavaScript-->
+                                <option value="NomeAcao"> Nome da Ação</option>
+                            </select><br><br>
+                            <input type="range" name="QuantidadeAcaoTransferida" id="QuantidadeAcaoTransferida" min="0" max="0" oninput="MostraQuantidade()" required> <span id="MostraQuantidade">0</span> <br><br>
+                        </form>
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <div>
+                        <input type="submit" value="Cadastrar Mudança de Venda de Ações" form="ModificaVenda">
+                    </div>
+                </div>
+            </div>
+            <div style="grid-template-columns: 1fr 70fr 1fr 70fr 1fr; display: grid">
+                <div><!-- div vazia --></div>
+                <div id="VendasCadastradas">
+                    <h2>Vendas Cadastradas no Sistema <br>que Permitem Mudança (60 dias)</h2>
+                    <div style="grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr; display: grid; text-align: center;">
+                        <div>
+                            <b>Ações</b>
+                        </div>
+                        <div>
+                            <b>Corretora</b>
+                        </div>
+                        <div>
+                            <b>Quantidade</b>
+                        </div>
+                        <div>
+                            <b>Valor NF</b>
+                        </div>
+                        <div>
+                            <b>Valor Líquido</b>
+                        </div>
+                        <div>
+                            <b>Nota Fiscal</b>
+                        </div>
+                        <div>
+                            <b>Data Venda</b>
+                        </div>
+                    </div>
+                </div>
+                <div><!-- div vazia --></div>
+                <div id="ComprasCadastradas">
+                    <h2>Ações disponíveis na <br> Carteira de Ações Atual</h2>
+                    <div style="grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr; display: grid; text-align: center;">
+                        <div>
+                            <b>Ações</b>
+                        </div>
+                        <div>
+                            <b>Corretora</b>
+                        </div>
+                        <div>
+                            <b>Quantidade</b>
+                        </div>
+                        <div>
+                            <b>Valor NF</b>
+                        </div>
+                        <div>
+                            <b>Custo Compra</b>
+                        </div>
+                        <div>
+                            <b>Nota Fiscal</b>
+                        </div>
+                        <div>
+                            <b>Data Compra</b>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        
+            <br><br>
+
+                
+        </section>
+        <footer>
+            <b>Feito por Fabiano Médice<br>2020</b>
+        </footer>
+        <script>
+
+            //Cria a data
+            var Ano = new Date().getFullYear();
+            var Mes = new Date().getMonth()+1;
+            var Dia = new Date().getDate();
+            var DataFinal;
+            if (Dia<10)
+            {
+                //coloca o zero
+                DataFinal = Ano+"-"+Mes+"-0"+Dia;
+            }
+            else
+            {
+                //salva a data normal
+                DataFinal = Ano+"-"+Mes+"-"+Dia;
+            }
+            //Faz a data final
+            var DataInicial = new Date();
+            DataInicial.setDate(DataInicial.getDate() - 60);
+            Ano=DataInicial.getFullYear();
+            Mes = DataInicial.getMonth()+1;
+            Dia = DataInicial.getDate();
+            if (Dia<10)
+            {
+                //coloca o zero
+                DataInicial = Ano+"-"+Mes+"-0"+Dia;
+            }
+            else
+            {
+                //salva a data normal
+                DataInicial = Ano+"-"+Mes+"-"+Dia;
+            }
+
+            //Iniciação
+            Chamar_Banco_De_Dados_Acoes();
+            ColocaOpcoesDeTransferencia();
+
+            // -------------------------------------------------------
+            //Função para ler o banco de dados de compras
+            // -------------------------------------------------------
+            function Chamar_Banco_De_Dados_Acoes()
+            {
+                // Chama a leitura para o servidor
+                var xhttp;
+                xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() 
+                {
+                    if (this.readyState == 4 && this.status == 200) 
+                    {
+                        if(this.responseText == "Nenhuma Ação Encontrada")
+                        {
+                            document.getElementById("VendasCadastradas").innerHTML = this.responseText;
+                        }
+                        else
+                        {
+                            $BancoDeDados_Acoes = JSON.parse(this.responseText);
+                            Ler_NF();
+                            //console.log($BancoDeDados_Acoes)
+                            //document.getElementById("VendasCadastradas").innerHTML = this.responseText;
+                        }
+                    }
+                }
+                xhttp.open("POST", "PHP/LerComprasEVendas.php", false); //o false não deixa ser assincrono
+                xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhttp.send("DataInicial="+DataInicial+"&DataFinal="+DataFinal);
+            }
+
+            // -------------------------------------------------------
+            //Função para ler o banco de dados de Notas Fiscais
+            // -------------------------------------------------------
+            function Ler_NF()
+            {
+                // Chama a leitura para o servidor
+                var xhttp;
+                xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() 
+                {
+                    if (this.readyState == 4 && this.status == 200) 
+                    {
+                        if(this.responseText == "Nenhuma Nota Fiscal Encontrada")
+                        {
+                            $BancoDeDados_NF = this.responseText;
+                        }
+                        else
+                        {
+                            $BancoDeDados_NF = JSON.parse(this.responseText);
+                        }
+                        OrganizaBancoDeDados();
+                    }
+                }
+                xhttp.open("GET", "PHP/LerNF.php", false); //o false não deixa ser assincrono
+                xhttp.send();
+            }
+            // -------------------------------------------------------
+            // Organiza o Banco de Dados Enviados e cria divs
+            // -------------------------------------------------------
+            function OrganizaBancoDeDados()
+            {
+                //organiza o banco de dados
+                multiSort($BancoDeDados_Acoes, {Operacao: 'asc', NomeAcao: 'asc', Data: 'asc', CodigoAcao: 'asc', })
+                
+                //Coloca as vendas registradas
+                var texto_Vendas="";
+                texto_Vendas = texto_Vendas+
+                '<h2>Vendas Cadastradas no Sistema <br>que Permitem Mudança (60 dias)</h2>'+
+                '<div style="grid-template-rows: 1fr; display: grid">'+
+                    '<div style="grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr; display: grid; text-align: center;">'+
+                        '<div> <b>Ações</b> </div>'+
+                        '<div> <b>Corretora</b> </div>'+
+                        '<div> <b>Quantidade</b> </div>'+
+                        '<div> <b>Valor NF</b> </div>'+
+                        '<div ><b>Valor Líquido</b> </div>'+
+                        '<div> <b>Nota Fiscal</b> </div>'+
+                        '<div> <b>Data Venda</b> </div>'+
+                    '</div>'+
+                '</div>';
+
+                //Coloca as compras registradas
+                var texto_Compras="";
+                texto_Compras = texto_Compras+
+                '<h2>Ações disponíveis na <br> Carteira de Ações Atual</h2>'+
+                '<div style="grid-template-rows: 1fr; display: grid">'+
+                    '<div style="grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr; display: grid; text-align: center;">'+
+                        '<div> <b>Ações</b> </div>'+
+                        '<div> <b>Corretora</b> </div>'+
+                        '<div> <b>Quantidade</b> </div>'+
+                        '<div> <b>Valor NF</b> </div>'+
+                        '<div> <b>Custo Compra</b> </div>'+
+                        '<div> <b>Nota Fiscal</b> </div>'+
+                        '<div> <b>Data Compra</b> </div>'+
+                    '</div>'+
+                '</div>';
+                var NumeroLinhaCompra = 1;
+                var NumeroLinhaVenda = 1;
+                for (i=0;i<$BancoDeDados_Acoes.length;i++)
+                {
+                    if($BancoDeDados_Acoes[i].Operacao != "DayTrade")
+                    {
+                        //Retira todos de day trade
+                        var QuantidadeNF = $BancoDeDados_NF.length; //teste para conferencia de Nota Fiscal
+                        //Calculo do preço líquido
+                        for(j=0;j<$BancoDeDados_NF.length;j++)
+                        {
+                            if($BancoDeDados_Acoes[i].Data == $BancoDeDados_NF[j].Data && $BancoDeDados_Acoes[i].CorretoraAcao == $BancoDeDados_NF[j].CorretoraNF && $BancoDeDados_Acoes[i].NotaFiscalAcao == $BancoDeDados_NF[j].NotaFiscal)
+                            {
+                                var CustoTotalOperacao = $BancoDeDados_NF[j].CustoTotalOperacao;
+                                var ValorOperacoesTotais = $BancoDeDados_NF[j].ValorOperacoesTotais;
+                            }
+                            else
+                            {
+                                //Não achou a Nota Fiscal
+                                QuantidadeNF = QuantidadeNF-1;
+                                if(QuantidadeNF==0)
+                                {
+                                    //não achou a Nota Fiscal
+                                    var CustoTotalOperacao = 0;
+                                    var ValorOperacoesTotais = 0;
+                                }
+                            }
+                        }
+                        //console.log($BancoDeDados_Acoes[i].Custo)
+                        //console.log($BancoDeDados_Acoes[i].QuantidadeRestante)
+                        //console.log($BancoDeDados_Acoes[i].QuantidadeTotal)
+
+                        if($BancoDeDados_Acoes[i].Operacao == "Compra")
+                        {
+                            //Soma o custo da operação
+                            PrecoLiquidoTotal = ($BancoDeDados_Acoes[i].Custo*$BancoDeDados_Acoes[i].QuantidadeTotal+$BancoDeDados_Acoes[i].QuantidadeTotal*$BancoDeDados_Acoes[i].Custo/ValorOperacoesTotais*CustoTotalOperacao).toFixed(2);
+                        }
+                        else if($BancoDeDados_Acoes[i].Operacao=="Venda")
+                        {
+                            //Subtrai o custo da operação
+                            PrecoLiquidoTotal = ($BancoDeDados_Acoes[i].Custo*$BancoDeDados_Acoes[i].QuantidadeTotal-$BancoDeDados_Acoes[i].QuantidadeTotal*$BancoDeDados_Acoes[i].Custo/ValorOperacoesTotais*CustoTotalOperacao).toFixed(2);
+                        }
+                        
+                        if($BancoDeDados_Acoes[i].Operacao=="Venda")
+                        {
+                            //Confere se não é DayTrade
+                            EhDaytrade = false;
+                            for(j=0;j<$BancoDeDados_Acoes.length;j++)
+                            {
+                                if
+                                (
+                                    $BancoDeDados_Acoes[j].Operacao=="DayTrade" && //Confere se a operação a ser comparada é Dray trade
+                                    $BancoDeDados_Acoes[i].NomeAcao == $BancoDeDados_Acoes[j].NomeAcao && //Confere se os nomes são os mesmos
+                                    $BancoDeDados_Acoes[i].CodigoAcao == $BancoDeDados_Acoes[j].CodigoAcao && //Confere se os codigos são os mesmos
+                                    $BancoDeDados_Acoes[i].CorretoraAcao == $BancoDeDados_Acoes[j].CorretoraAcao && //Confere se a corretora é a mesma
+                                    $BancoDeDados_Acoes[i].Data == $BancoDeDados_Acoes[j].Data && //Confere se as datas são as mesmas
+                                    $BancoDeDados_Acoes[i].NotaFiscalAcao == $BancoDeDados_Acoes[j].NotaFiscalAcao //Confere se as notas fiscais são as mesmas
+                                )
+                                {
+                                    //console.log("É daytrade - "+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao)
+                                    EhDaytrade = true;
+                                }
+                            }
+
+                            if(!EhDaytrade)
+                            {
+                                //console.log("Não é day trade - "+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao)
+                                if(i+1<$BancoDeDados_Acoes.length )
+                                {
+                                    //Não é a ultima linha
+                                    if($BancoDeDados_Acoes[i].Operacao==$BancoDeDados_Acoes[i+1].Operacao)
+                                    {
+                                        //confere se os dois são a mesma operação
+                                        if($BancoDeDados_Acoes[i].NomeAcao==$BancoDeDados_Acoes[i+1].NomeAcao)
+                                        {
+                                            //São a mesma ação
+                                            if(NumeroLinhaVenda%2==1)
+                                            {
+                                                //Linha impar, sem fundo
+                                                texto_Vendas = texto_Vendas+
+                                                '<div style="grid-template-rows: 1fr; display: grid">'+
+                                                    '<div style="grid-template-columns: repeat(7,1fr); display: grid; text-align: center;">'+
+                                                        '<div>'+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao+'</div>'+
+                                                        '<div>'+$BancoDeDados_Acoes[i].CorretoraAcao+'</div>'+
+                                                        '<div>'+$BancoDeDados_Acoes[i].QuantidadeTotal+'</div>'+
+                                                        '<div>'+($BancoDeDados_Acoes[i].Custo*1).toFixed(2)+'</div>'+
+                                                        '<div>'+(PrecoLiquidoTotal/$BancoDeDados_Acoes[i].QuantidadeTotal).toFixed(4)+'</div>'+
+                                                        '<div>'+$BancoDeDados_Acoes[i].NotaFiscalAcao+'</div>'+
+                                                        '<div>'+$BancoDeDados_Acoes[i].Data+'</div>'+
+                                                    '</div>'+
+                                                '</div>';
+                                            }
+                                            else
+                                            {
+                                                //Linha par, com fundo
+                                                texto_Vendas = texto_Vendas+
+                                                '<div style="grid-template-rows: 1fr; display: grid">'+
+                                                    '<div style="grid-template-columns: repeat(7,1fr); display: grid; text-align: center; background-color:lightgray">'+
+                                                        '<div>'+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao+'</div>'+
+                                                        '<div>'+$BancoDeDados_Acoes[i].CorretoraAcao+'</div>'+
+                                                        '<div>'+$BancoDeDados_Acoes[i].QuantidadeTotal+'</div>'+
+                                                        '<div>'+($BancoDeDados_Acoes[i].Custo*1).toFixed(2)+'</div>'+
+                                                        '<div>'+(PrecoLiquidoTotal/$BancoDeDados_Acoes[i].QuantidadeTotal).toFixed(4)+'</div>'+
+                                                        '<div>'+$BancoDeDados_Acoes[i].NotaFiscalAcao+'</div>'+
+                                                        '<div>'+$BancoDeDados_Acoes[i].Data+'</div>'+
+                                                    '</div>'+
+                                                '</div>';
+                                            }
+
+                                            //Variavel numero linha recebe +1
+                                            NumeroLinhaVenda = NumeroLinhaVenda +1;
+                                        }
+                                        else
+                                        {
+                                            //Não são a mesma ação
+                                            if(NumeroLinhaVenda%2==1)
+                                            {
+                                                //Linha impar, sem fundo
+                                                texto_Vendas = texto_Vendas+
+                                                '<div style="grid-template-rows: 1fr; display: grid">'+
+                                                    '<div style="grid-template-columns: repeat(7,1fr); display: grid; text-align: center;">'+
+                                                        '<div>'+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao+'</div>'+
+                                                        '<div>'+$BancoDeDados_Acoes[i].CorretoraAcao+'</div>'+
+                                                        '<div>'+$BancoDeDados_Acoes[i].QuantidadeTotal+'</div>'+
+                                                        '<div>'+($BancoDeDados_Acoes[i].Custo*1).toFixed(2)+'</div>'+
+                                                        '<div>'+(PrecoLiquidoTotal/$BancoDeDados_Acoes[i].QuantidadeTotal).toFixed(4)+'</div>'+
+                                                        '<div>'+$BancoDeDados_Acoes[i].NotaFiscalAcao+'</div>'+
+                                                        '<div>'+$BancoDeDados_Acoes[i].Data+'</div>'+
+                                                    '</div>'+
+                                                '</div>';
+                                            }
+                                            else
+                                            {
+                                                //Linha par, com fundo
+                                                texto_Vendas = texto_Vendas+
+                                                '<div style="grid-template-rows: 1fr; display: grid">'+
+                                                    '<div style="grid-template-columns: repeat(7,1fr); display: grid; text-align: center; background-color:lightgray">'+
+                                                        '<div>'+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao+'</div>'+
+                                                        '<div>'+$BancoDeDados_Acoes[i].CorretoraAcao+'</div>'+
+                                                        '<div>'+$BancoDeDados_Acoes[i].QuantidadeTotal+'</div>'+
+                                                        '<div>'+($BancoDeDados_Acoes[i].Custo*1).toFixed(2)+'</div>'+
+                                                        '<div>'+(PrecoLiquidoTotal/$BancoDeDados_Acoes[i].QuantidadeTotal).toFixed(4)+'</div>'+
+                                                        '<div>'+$BancoDeDados_Acoes[i].NotaFiscalAcao+'</div>'+
+                                                        '<div>'+$BancoDeDados_Acoes[i].Data+'</div>'+
+                                                    '</div>'+
+                                                '</div>';
+                                            }
+
+                                            //reseta a variavel numero linha
+                                            NumeroLinhaVenda = 1;
+
+                                            //adiciona uma linha
+                                            texto_Vendas = texto_Vendas+'<div style="grid-template-rows: 1fr; display: grid"><br></div>';
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //Não são a mesma operação (ultima operação)
+                                        //Somente soma o texto final
+                                    }
+                                }
+                                else
+                                {
+                                    //é a ultima linha
+                                    if(NumeroLinhaVenda%2==1)
+                                    {
+                                        //Linha impar, sem fundo
+                                        texto_Vendas = texto_Vendas+
+                                        '<div style="grid-template-rows: 1fr; display: grid">'+
+                                            '<div style="grid-template-columns: repeat(7,1fr); display: grid; text-align: center;">'+
+                                                '<div>'+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao+'</div>'+
+                                                '<div>'+$BancoDeDados_Acoes[i].CorretoraAcao+'</div>'+
+                                                '<div>'+$BancoDeDados_Acoes[i].QuantidadeTotal+'</div>'+
+                                                '<div>'+($BancoDeDados_Acoes[i].Custo*1).toFixed(2)+'</div>'+
+                                                '<div>'+(PrecoLiquidoTotal/$BancoDeDados_Acoes[i].QuantidadeTotal).toFixed(4)+'</div>'+
+                                                '<div>'+$BancoDeDados_Acoes[i].NotaFiscalAcao+'</div>'+
+                                                '<div>'+$BancoDeDados_Acoes[i].Data+'</div>'+
+                                            '</div>'+
+                                        '</div>';
+                                    }
+                                    else
+                                    {
+                                        //Linha par, com fundo
+                                        texto_Vendas = texto_Vendas+
+                                        '<div style="grid-template-rows: 1fr; display: grid">'+
+                                            '<div style="grid-template-columns: repeat(7,1fr); display: grid; text-align: center; background-color:lightgray">'+
+                                                '<div>'+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao+'</div>'+
+                                                '<div>'+$BancoDeDados_Acoes[i].CorretoraAcao+'</div>'+
+                                                '<div>'+$BancoDeDados_Acoes[i].QuantidadeTotal+'</div>'+
+                                                '<div>'+($BancoDeDados_Acoes[i].Custo*1).toFixed(2)+'</div>'+
+                                                '<div>'+(PrecoLiquidoTotal/$BancoDeDados_Acoes[i].QuantidadeTotal).toFixed(4)+'</div>'+
+                                                '<div>'+$BancoDeDados_Acoes[i].NotaFiscalAcao+'</div>'+
+                                                '<div>'+$BancoDeDados_Acoes[i].Data+'</div>'+
+                                            '</div>'+
+                                        '</div>';
+                                    }
+                                }
+                            }
+                        }
+                        else if($BancoDeDados_Acoes[i].Operacao == "Compra")
+                        {
+                            if(i+1<$BancoDeDados_Acoes.length )
+                            {
+                                //Não é a ultima linha
+                                if($BancoDeDados_Acoes[i].Operacao==$BancoDeDados_Acoes[i+1].Operacao)
+                                {
+                                    //confere se os dois são a mesma operação
+                                    if($BancoDeDados_Acoes[i].NomeAcao==$BancoDeDados_Acoes[i+1].NomeAcao)
+                                    {
+                                        //São a mesma ação
+                                        if(NumeroLinhaVenda%2==1)
+                                        {
+                                            //Linha impar, sem fundo
+                                            texto_Compras = texto_Compras+
+                                            '<div style="grid-template-rows: 1fr; display: grid">'+
+                                                '<div style="grid-template-columns: repeat(7,1fr); display: grid; text-align: center;">'+
+                                                    '<div>'+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao+'</div>'+
+                                                    '<div>'+$BancoDeDados_Acoes[i].CorretoraAcao+'</div>'+
+                                                    '<div>'+$BancoDeDados_Acoes[i].QuantidadeRestante+'</div>'+
+                                                    '<div>'+($BancoDeDados_Acoes[i].Custo*1).toFixed(2)+'</div>'+
+                                                    '<div>'+(PrecoLiquidoTotal/$BancoDeDados_Acoes[i].QuantidadeTotal).toFixed(4)+'</div>'+
+                                                    '<div>'+$BancoDeDados_Acoes[i].NotaFiscalAcao+'</div>'+
+                                                    '<div>'+$BancoDeDados_Acoes[i].Data+'</div>'+
+                                                '</div>'+
+                                            '</div>';
+                                        }
+                                        else
+                                        {
+                                            //Linha par, com fundo
+                                            texto_Compras = texto_Compras+
+                                            '<div style="grid-template-rows: 1fr; display: grid">'+
+                                                '<div style="grid-template-columns: repeat(7,1fr); display: grid; text-align: center; background-color:lightgray">'+
+                                                    '<div>'+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao+'</div>'+
+                                                    '<div>'+$BancoDeDados_Acoes[i].CorretoraAcao+'</div>'+
+                                                    '<div>'+$BancoDeDados_Acoes[i].QuantidadeRestante+'</div>'+
+                                                    '<div>'+($BancoDeDados_Acoes[i].Custo*1).toFixed(2)+'</div>'+
+                                                    '<div>'+(PrecoLiquidoTotal/$BancoDeDados_Acoes[i].QuantidadeTotal).toFixed(4)+'</div>'+
+                                                    '<div>'+$BancoDeDados_Acoes[i].NotaFiscalAcao+'</div>'+
+                                                    '<div>'+$BancoDeDados_Acoes[i].Data+'</div>'+
+                                                '</div>'+
+                                            '</div>';
+                                        }
+                                        //Variavel numero linha recebe +1
+                                        NumeroLinhaVenda = NumeroLinhaVenda +1;
+                                    }
+                                    else
+                                    {
+                                        //Não são a mesma ação
+                                        if(NumeroLinhaVenda%2==1)
+                                        {
+                                            //Linha impar, sem fundo
+                                            texto_Compras = texto_Compras+
+                                            '<div style="grid-template-rows: 1fr; display: grid">'+
+                                                '<div style="grid-template-columns: repeat(7,1fr); display: grid; text-align: center;">'+
+                                                    '<div>'+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao+'</div>'+
+                                                    '<div>'+$BancoDeDados_Acoes[i].CorretoraAcao+'</div>'+
+                                                    '<div>'+$BancoDeDados_Acoes[i].QuantidadeRestante+'</div>'+
+                                                    '<div>'+($BancoDeDados_Acoes[i].Custo*1).toFixed(2)+'</div>'+
+                                                    '<div>'+(PrecoLiquidoTotal/$BancoDeDados_Acoes[i].QuantidadeTotal).toFixed(4)+'</div>'+
+                                                    '<div>'+$BancoDeDados_Acoes[i].NotaFiscalAcao+'</div>'+
+                                                    '<div>'+$BancoDeDados_Acoes[i].Data+'</div>'+
+                                                '</div>'+
+                                            '</div>';
+                                        }
+                                        else
+                                        {
+                                            //Linha par, com fundo
+                                            texto_Compras = texto_Compras+
+                                            '<div style="grid-template-rows: 1fr; display: grid">'+
+                                                '<div style="grid-template-columns: repeat(7,1fr); display: grid; text-align: center; background-color:lightgray">'+
+                                                    '<div>'+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao+'</div>'+
+                                                    '<div>'+$BancoDeDados_Acoes[i].CorretoraAcao+'</div>'+
+                                                    '<div>'+$BancoDeDados_Acoes[i].QuantidadeRestante+'</div>'+
+                                                    '<div>'+($BancoDeDados_Acoes[i].Custo*1).toFixed(2)+'</div>'+
+                                                    '<div>'+(PrecoLiquidoTotal/$BancoDeDados_Acoes[i].QuantidadeTotal).toFixed(4)+'</div>'+
+                                                    '<div>'+$BancoDeDados_Acoes[i].NotaFiscalAcao+'</div>'+
+                                                    '<div>'+$BancoDeDados_Acoes[i].Data+'</div>'+
+                                                '</div>'+
+                                            '</div>';
+                                        }
+                                        
+                                        //reseta a variavel numero linha
+                                        NumeroLinhaVenda = 1;
+
+                                        //adiciona uma linha
+                                        texto_Compras = texto_Compras+'<div style="grid-template-rows: 1fr; display: grid"><br></div>';
+                                    }
+                                }
+                                else
+                                {
+                                    //Não são a mesma operação (ultima operação)
+                                    //é a ultima linha de compra
+                                    if(NumeroLinhaVenda%2==1)
+                                    {
+                                        //Linha impar, sem fundo
+                                        texto_Compras = texto_Compras+
+                                        '<div style="grid-template-rows: 1fr; display: grid">'+
+                                            '<div style="grid-template-columns: repeat(7,1fr); display: grid; text-align: center;">'+
+                                                '<div>'+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao+'</div>'+
+                                                '<div>'+$BancoDeDados_Acoes[i].CorretoraAcao+'</div>'+
+                                                '<div>'+$BancoDeDados_Acoes[i].QuantidadeRestante+'</div>'+
+                                                '<div>'+($BancoDeDados_Acoes[i].Custo*1).toFixed(2)+'</div>'+
+                                                '<div>'+(PrecoLiquidoTotal/$BancoDeDados_Acoes[i].QuantidadeTotal).toFixed(4)+'</div>'+
+                                                '<div>'+$BancoDeDados_Acoes[i].NotaFiscalAcao+'</div>'+
+                                                '<div>'+$BancoDeDados_Acoes[i].Data+'</div>'+
+                                            '</div>'+
+                                        '</div>';
+                                    }
+                                    else
+                                    {
+                                        //Linha par, com fundo
+                                        texto_Compras = texto_Compras+
+                                        '<div style="grid-template-rows: 1fr; display: grid">'+
+                                            '<div style="grid-template-columns: repeat(7,1fr); display: grid; text-align: center; background-color:lightgray">'+
+                                                '<div>'+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao+'</div>'+
+                                                '<div>'+$BancoDeDados_Acoes[i].CorretoraAcao+'</div>'+
+                                                '<div>'+$BancoDeDados_Acoes[i].QuantidadeRestante+'</div>'+
+                                                '<div>'+($BancoDeDados_Acoes[i].Custo*1).toFixed(2)+'</div>'+
+                                                '<div>'+(PrecoLiquidoTotal/$BancoDeDados_Acoes[i].QuantidadeTotal).toFixed(4)+'</div>'+
+                                                '<div>'+$BancoDeDados_Acoes[i].NotaFiscalAcao+'</div>'+
+                                                '<div>'+$BancoDeDados_Acoes[i].Data+'</div>'+
+                                            '</div>'+
+                                        '</div>';
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                //é a ultima linha, então não tem venda
+                                if(NumeroLinhaVenda%2==1)
+                                {
+                                    //Linha impar, sem fundo
+                                    texto_Compras = texto_Compras+
+                                    '<div style="grid-template-rows: 1fr; display: grid">'+
+                                        '<div style="grid-template-columns: repeat(7,1fr); display: grid; text-align: center;">'+
+                                            '<div>'+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao+'</div>'+
+                                            '<div>'+$BancoDeDados_Acoes[i].CorretoraAcao+'</div>'+
+                                            '<div>'+$BancoDeDados_Acoes[i].QuantidadeRestante+'</div>'+
+                                            '<div>'+($BancoDeDados_Acoes[i].Custo*1).toFixed(2)+'</div>'+
+                                            '<div>'+(PrecoLiquidoTotal/$BancoDeDados_Acoes[i].QuantidadeTotal).toFixed(4)+'</div>'+
+                                            '<div>'+$BancoDeDados_Acoes[i].NotaFiscalAcao+'</div>'+
+                                            '<div>'+$BancoDeDados_Acoes[i].Data+'</div>'+
+                                        '</div>'+
+                                    '</div>';
+                                }
+                                else
+                                {
+                                    //Linha par, com fundo
+                                    texto_Compras = texto_Compras+
+                                    '<div style="grid-template-rows: 1fr; display: grid">'+
+                                        '<div style="grid-template-columns: repeat(7,1fr); display: grid; text-align: center; background-color:lightgray">'+
+                                            '<div>'+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao+'</div>'+
+                                            '<div>'+$BancoDeDados_Acoes[i].CorretoraAcao+'</div>'+
+                                            '<div>'+$BancoDeDados_Acoes[i].QuantidadeRestante+'</div>'+
+                                            '<div>'+($BancoDeDados_Acoes[i].Custo*1).toFixed(2)+'</div>'+
+                                            '<div>'+(PrecoLiquidoTotal/$BancoDeDados_Acoes[i].QuantidadeTotal).toFixed(4)+'</div>'+
+                                            '<div>'+$BancoDeDados_Acoes[i].NotaFiscalAcao+'</div>'+
+                                            '<div>'+$BancoDeDados_Acoes[i].Data+'</div>'+
+                                        '</div>'+
+                                    '</div>';
+                                }
+                            }
+                        }
+                    }
+                    
+                }
+
+                document.getElementById("VendasCadastradas").innerHTML = texto_Vendas;
+                document.getElementById("ComprasCadastradas").innerHTML = texto_Compras;
+
+                //Cadastra as opções 
+                texto_Vendas="";
+                texto_Compras="";
+                for (i=0;i<$BancoDeDados_Acoes.length;i++)
+                {
+                    //Confere se não é DayTrade
+                    EhDaytrade = false;
+                    for(j=0;j<$BancoDeDados_Acoes.length;j++)
+                    {
+                        if
+                        (
+                            $BancoDeDados_Acoes[j].Operacao=="DayTrade" && //Confere se a operação a ser comparada é Dray trade
+                            $BancoDeDados_Acoes[i].NomeAcao == $BancoDeDados_Acoes[j].NomeAcao && //Confere se os nomes são os mesmos
+                            $BancoDeDados_Acoes[i].CodigoAcao == $BancoDeDados_Acoes[j].CodigoAcao && //Confere se os codigos são os mesmos
+                            $BancoDeDados_Acoes[i].CorretoraAcao == $BancoDeDados_Acoes[j].CorretoraAcao && //Confere se a corretora é a mesma
+                            $BancoDeDados_Acoes[i].Data == $BancoDeDados_Acoes[j].Data && //Confere se as datas são as mesmas
+                            $BancoDeDados_Acoes[i].NotaFiscalAcao == $BancoDeDados_Acoes[j].NotaFiscalAcao //Confere se as notas fiscais são as mesmas
+                        )
+                        {
+                            //console.log("É daytrade - "+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao)
+                            EhDaytrade = true;
+                        }
+                    }
+
+                    if(!EhDaytrade)
+                    {
+                        //Não é day trade, então pode colocar opções
+                        if($BancoDeDados_Acoes[i].Operacao=="Venda")
+                        {
+                            texto_Vendas = texto_Vendas+ "<option value='"+'{"NomeAcao":"'+$BancoDeDados_Acoes[i].NomeAcao+'","CodigoAcao":"'+$BancoDeDados_Acoes[i].CodigoAcao+'","CorretoraAcao":"'+$BancoDeDados_Acoes[i].CorretoraAcao+'","QuantidadeAcaoVendida":"'+$BancoDeDados_Acoes[i].QuantidadeTotal+'","PrecoVendido":"'+$BancoDeDados_Acoes[i].Custo+'","NotaFiscalAcao":"'+$BancoDeDados_Acoes[i].NotaFiscalAcao+'","DataVenda":"'+$BancoDeDados_Acoes[i].Data+'"}'+"'>"+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao+" - "+$BancoDeDados_Acoes[i].Data+" - Custo: "+($BancoDeDados_Acoes[i].Custo*1).toFixed(2)+" - NF: "+$BancoDeDados_Acoes[i].NotaFiscalAcao+'</option>';
+                        }
+                    }
+                }
+                document.getElementById("NomeAcaoVenda").innerHTML = texto_Vendas;
+                document.getElementById("NomeAcaoCompra").innerHTML = texto_Compras;
+                document.getElementById("NomeAcaoCompra").style.width = document.getElementById("NomeAcaoVenda").offsetWidth+"px";
+
+            }
+
+            function ColocaOpcoesDeTransferencia()
+            {
+                //Cadastra as opções 
+                var Escolha = JSON.parse(document.getElementById("NomeAcaoVenda").value);
+                
+                texto_Compras="";
+                for (i=0;i<$BancoDeDados_Acoes.length;i++)
+                {
+                    if($BancoDeDados_Acoes[i].Operacao=="Compra" && $BancoDeDados_Acoes[i].NomeAcao == Escolha.NomeAcao && $BancoDeDados_Acoes[i].CorretoraAcao == Escolha.CorretoraAcao)
+                    {
+                        texto_Compras = texto_Compras+ "<option value='"+'{"NomeAcao":"'+$BancoDeDados_Acoes[i].NomeAcao+'","CodigoAcao":"'+$BancoDeDados_Acoes[i].CodigoAcao+'","QuantidadeDisponivel":"'+$BancoDeDados_Acoes[i].QuantidadeRestante+'"}'+"'>"+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao+" - "+$BancoDeDados_Acoes[i].CorretoraAcao+'</option>';
+                    }
+                }
+                document.getElementById("NomeAcaoCompra").innerHTML = texto_Compras;
+                ColocaLimiteAcoes()
+            }
+
+            function ColocaLimiteAcoes()
+            {
+                var EscolhaCompra = JSON.parse(document.getElementById("NomeAcaoCompra").value);
+                var EscolhaVenda = JSON.parse(document.getElementById("NomeAcaoVenda").value);
+                for (i=0;i<$BancoDeDados_Acoes.length;i++)
+                {
+                    if($BancoDeDados_Acoes[i].Operacao=="Compra" && $BancoDeDados_Acoes[i].NomeAcao==EscolhaCompra.NomeAcao && $BancoDeDados_Acoes[i].CodigoAcao==EscolhaCompra.CodigoAcao)
+                    {
+                        var ValorMaxCompra = parseInt($BancoDeDados_Acoes[i].QuantidadeRestante);
+                    }
+                    if($BancoDeDados_Acoes[i].Operacao=="Venda" && $BancoDeDados_Acoes[i].NomeAcao==EscolhaVenda.NomeAcao && $BancoDeDados_Acoes[i].Custo==EscolhaVenda.PrecoVendido && $BancoDeDados_Acoes[i].CodigoAcao==EscolhaVenda.CodigoAcao)
+                    {
+                        var ValorMaxVenda = parseInt($BancoDeDados_Acoes[i].QuantidadeTotal);
+                    }
+                }
+                if(ValorMaxCompra >= ValorMaxVenda)
+                {
+                    //Venda menor, então o limite é a venda
+                    document.getElementById("QuantidadeAcaoTransferida").max =ValorMaxVenda;
+                }
+                else
+                {
+                    //Compra menor, então o limite é a compra
+                    document.getElementById("QuantidadeAcaoTransferida").max =ValorMaxCompra;
+                }
+                MostraQuantidade()
+            }
+            
+            function MostraQuantidade()
+            {
+                //Mostra a quantidade selecionada
+                document.getElementById("MostraQuantidade").innerHTML = document.getElementById("QuantidadeAcaoTransferida").value;
+            }
+
+
+
+
+            /** Fonte: <https://www.golangprograms.com/javascript-sort-multi-dimensional-array-on-specific-columns.html>
+            * Sorts an array of objects by column/property.
+            * @param {Array} array - The array of objects.
+            * @param {object} sortObject - The object that contains the sort order keys with directions (asc/desc). e.g. { age: 'desc', name: 'asc' }
+            * @returns {Array} The sorted array.
+            */
+            function multiSort(array, sortObject = {}) 
+            {
+                const sortKeys = Object.keys(sortObject);
+
+                // Return array if no sort object is supplied.
+                if (!sortKeys.length) 
+                {
+                    return array;
+                }
+
+                // Change the values of the sortObject keys to -1, 0, or 1.
+                for (let key in sortObject) 
+                {
+                    sortObject[key] = sortObject[key] === 'desc' || sortObject[key] === -1 ? -1 : (sortObject[key] === 'skip' || sortObject[key] === 0 ? 0 : 1);
+                }
+
+                const keySort = (a, b, direction) => 
+                { 
+                    direction = direction !== null ? direction : 1;
+
+                    if (a === b) 
+                    { // If the values are the same, do not switch positions.
+                        return 0;
+                    }
+
+                    // If b > a, multiply by -1 to get the reverse direction.
+                    return a > b ? direction : -1 * direction;
+                };
+
+                return array.sort((a, b) => 
+                {
+                    let sorted = 0;
+                    let index = 0;
+
+                    // Loop until sorted (-1 or 1) or until the sort keys have been processed.
+                    while (sorted === 0 && index < sortKeys.length) 
+                    {
+                        const key = sortKeys[index];
+
+                        if (key) 
+                        {
+                            const direction = sortObject[key];
+
+                            sorted = keySort(a[key], b[key], direction);
+                            index++;
+                        }
+                    }
+
+                    return sorted;
+                });
+            }
+
+        </script>
+    </body>
+</html>

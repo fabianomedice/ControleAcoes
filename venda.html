@@ -1,0 +1,419 @@
+<!DOCTYPE html> 
+
+<html lang="pt-br" style="scroll-behavior: smooth;">
+	<head>
+		<!-- Titulo da aba-->
+		<title> 
+			Controle de Ações de Vanderlei
+		</title>
+		<!-- Metadados -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="author" content="Fabiano Médice">
+        <link rel="stylesheet" type="text/css" href="CSS/style.css">
+	</head>
+	<body>
+        <header>
+            <nav class="menu">
+                <div class="menu-dropdown">
+                    <button class="botao-dropdown">Consultas</button>
+                    <div class="conteudo-dropdown">
+                        <a href="resumo.html">Carteira de Ações Atuais</a>
+                        <a href="controlelucroprejuizo.html">Controle de Lucro e Prejuízo</a>
+                        <a href="historico.html">Histórico de Notas Fiscais</a>
+                        <a href="imposto.html">Imposto Devido Mensal</a>
+                    </div>
+                </div>    
+                <div class="menu-dropdown PaginaAtiva">
+                    <button class="botao-dropdown">Cadastros</button>
+                    <div class="conteudo-dropdown">
+                        <a href="compra.html">Compra de Ações</a>
+                        <a href="venda.html">Venda de Ações</a>
+                        <a href="notafiscal.html">Nota Fiscal</a>
+                    </div>
+                </div>    
+                <div class="menu-dropdown">
+                    <button class="botao-dropdown">Modificações</button>
+                    <div class="conteudo-dropdown">
+                        <a href="mudancavenda.html">Modificar Venda</a>
+                        <a href="cancelarcadastro.html">Cancelar Cadastro</a>
+                    </div>
+                </div>
+                <div class="menu-dropdown" >
+                    <button class="botao-dropdown" onclick="window.location.href='index.html';">Sobre</button>
+                </div>
+            </nav>
+            <h1 id="titulo">Registro de Venda de Ações</h1>     
+        </header>
+        
+        <section >
+            <div style="grid-template-columns: 1fr 30fr 25fr 1fr; display: grid" id="DivMudanca">
+                <div><!-- div vazia --></div>
+                <div style="text-align: center;">
+                    <h2>Ações em Carteira</h2>
+                    <div style="grid-template-rows: 1fr; display: grid">
+                        <div style="grid-template-columns: 1fr 1fr 1fr 1fr 1fr; display: grid">
+                            <div>
+                                <b>Ações</b>
+                            </div>
+                            <div>
+                                <b>Corretora</b>
+                            </div>
+                            <div>
+                                <b>Quantidade</b>
+                            </div>
+                            <div>
+                                <b>Valor da NF</b>
+                            </div>
+                            <div>
+                                <b>Custo da Compra</b>
+                            </div>
+                            <div>
+                                <b>Data da Compra</b>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h2>Cadastrar Venda</h2>
+                    <div style="grid-template-columns: 1fr 1fr; display: grid">
+                        <div style="text-align: right;">
+                            <label for="NomeAcao">Nome da Ação:</label><br><br>
+                            <label for="QuantidadeAcaoVendida">Quantidade da Ação:</label><br><br>
+                            <label for="PrecoVendido">Valor da Venda Unitário da NF:</label><br><br>
+                            <label for="NotaFiscalAcao">Nota Fiscal da Ação:</label><br><br>
+                            <label for="DataVenda">Data da venda da Ação:</label><br><br>
+                        </div>
+                        <div>
+                            <form method="POST" action="PHP/RegistraVenda.php" id="RegistraVenda">
+                                <select name="NomeAcao" id="NomeAcao">
+                                    <!-- Opções por JavaScript-->
+                                    <option value="NomeAcao"> Nome da Ação</option>
+                                </select><br><br>
+                                <input type="number" name="QuantidadeAcaoVendida" id="QuantidadeAcaoVendida" min="0" placeholder="Quantidade" required><br><br>
+                                <input type="number" name="PrecoVendido" id="PrecoVendido" min="0" placeholder="Valor Bruno da Venda" step="0.001" onchange="ColocarOzero()" required><br><br>
+                                <input type="number" name="NotaFiscalAcao" id="NotaFiscalAcao" min="0" placeholder="Nota Fiscal" required><br><br>
+                                <input type="date" name="DataVenda" id="DataVenda" style="width: 172px;" required><br><br>
+                            </form>
+                        </div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div>
+                            <input type="submit" value="Cadastrar Venda de Ações" form="RegistraVenda">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        
+            <br><br>
+
+                
+        </section>
+        <footer>
+            <b>Feito por Fabiano Médice<br>2020</b>
+        </footer>
+        <script>
+
+            Ler_Compras();
+
+            // -------------------------------------------------------
+            //Função para ler o banco de dados de compras
+            // -------------------------------------------------------
+            function Ler_Compras()
+            {
+                // Chama a leitura para o servidor
+                var xhttp;
+                xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() 
+                {
+                    if (this.readyState == 4 && this.status == 200) 
+                    {
+                        if(this.responseText == "Nenhuma Nota Fiscal Encontrada")
+                        {
+                            document.getElementById("DivMudanca").innerHTML = this.responseText;
+                        }
+                        else
+                        {
+                            $BancoDeDados_Acoes = JSON.parse(this.responseText);
+                            
+                            //document.getElementById("DivHistorico").innerHTML = this.responseText;
+                            Ler_NF();
+                        }
+                    }
+                }
+                xhttp.open("GET", "PHP/LerCompras.php", false); //o false não deixa ser assincrono
+                xhttp.send();
+            }
+
+            // -------------------------------------------------------
+            //Função para ler o banco de dados de Notas Fiscais
+            // -------------------------------------------------------
+            function Ler_NF()
+            {
+                // Chama a leitura para o servidor
+                var xhttp;
+                xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() 
+                {
+                    if (this.readyState == 4 && this.status == 200) 
+                    {
+                        if(this.responseText == "Nenhuma Nota Fiscal Encontrada")
+                        {
+                            $BancoDeDados_NF = this.responseText;
+                        }
+                        else
+                        {
+                            $BancoDeDados_NF = JSON.parse(this.responseText);
+                            
+                            //document.getElementById("DivHistorico").innerHTML = this.responseText;
+                        }
+                        OrganizaBancoDeDados();
+                    }
+                }
+                xhttp.open("GET", "PHP/LerNF.php", false); //o false não deixa ser assincrono
+                xhttp.send();
+            }
+
+            function ColocarOzero()
+            {
+                if(document.getElementById("PrecoVendido").value[0]==".")
+                {
+                    document.getElementById("PrecoVendido").value=0+document.getElementById("PrecoVendido").value;
+                }
+            }
+
+            function OrganizaBancoDeDados()
+            {
+                //organiza o banco de dados
+                multiSort($BancoDeDados_Acoes, {NomeAcao: 'asc', DataCompra: 'asc', CodigoAcao: 'asc', })
+
+                texto = "";
+                texto = texto+
+                '<div><!-- div vazia --></div>'+
+                '<div style="text-align: center;">'+
+                    '<h2>Ações em Carteira</h2>'+
+                    '<div style="grid-template-rows: 1fr; display: grid">'+
+                        '<div style="grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr; display: grid">'+
+                            '<div>'+
+                                '<b>Ações</b>'+
+                            '</div>'+
+                            '<div>'+
+                                '<b>Corretora</b>'+
+                            '</div>'+
+                            '<div>'+
+                                '<b>Quantidade</b>'+
+                            '</div>'+
+                            '<div>'+
+                                '<b>Valor da NF</b>'+
+                            '</div>'+
+                            '<div>'+
+                                '<b>Custo da Compra</b>'+
+                            '</div>'+
+                            '<div>'+
+                                '<b>Data da Compra</b>'+
+                            '</div>'+
+                        '</div>'+
+                    '</div>';
+
+                var NumeroLinha=1;//Variavel para colocar background lightgrey em cada linha 
+                for (i=0;i<$BancoDeDados_Acoes.length;i++)
+                {
+                    var QuantidadeNF = $BancoDeDados_NF.length; //teste para conferencia de Nota Fiscal
+                    //Calculo do preço líquido
+                    for(j=0;j<$BancoDeDados_NF.length;j++)
+                    {
+                        if($BancoDeDados_Acoes[i].DataCompra == $BancoDeDados_NF[j].Data && $BancoDeDados_Acoes[i].CorretoraAcao == $BancoDeDados_NF[j].CorretoraNF && $BancoDeDados_Acoes[i].NotaFiscalAcao == $BancoDeDados_NF[j].NotaFiscal)
+                        {
+                            var CustoTotalOperacao = $BancoDeDados_NF[j].CustoTotalOperacao;
+                            var ValorOperacoesTotais = $BancoDeDados_NF[j].ValorOperacoesTotais;
+                        }
+                        else
+                        {
+                            //Não achou a Nota Fiscal
+                            QuantidadeNF = QuantidadeNF-1;
+                            if(QuantidadeNF==0)
+                            {
+                                //não achou a Nota Fiscal
+                                var CustoTotalOperacao = 0;
+                                var ValorOperacoesTotais = 0;
+                            }
+                        }
+                    }  
+                    PrecoLiquidoTotal = ($BancoDeDados_Acoes[i].CustoAcao*$BancoDeDados_Acoes[i].QuantidadeRestante+$BancoDeDados_Acoes[i].QuantidadeAcaoComprada*$BancoDeDados_Acoes[i].CustoAcao/ValorOperacoesTotais*CustoTotalOperacao).toFixed(2);    
+                    //console.log(PrecoLiquidoTotal)
+                    
+                    if(NumeroLinha%2==1)
+                    {
+                        //Linha inicial ou impar
+                        //faz o texto com com background branco/normal
+                        texto = texto+
+                        '<div style="grid-template-rows: 1fr; display: grid">'+
+                            '<div style="grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr; display: grid">'+
+                                '<div>'+
+                                    $BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao+
+                                '</div>'+
+                                '<div>'+
+                                    $BancoDeDados_Acoes[i].CorretoraAcao+
+                                '</div>'+
+                                '<div>'+
+                                    $BancoDeDados_Acoes[i].QuantidadeRestante+
+                                '</div>'+
+                                '<div>'+
+                                    ($BancoDeDados_Acoes[i].CustoAcao*1).toFixed(2)+
+                                '</div>'+
+                                '<div>'+
+                                    (PrecoLiquidoTotal/$BancoDeDados_Acoes[i].QuantidadeRestante).toFixed(4)+
+                                '</div>'+
+                                '<div>'+
+                                    $BancoDeDados_Acoes[i].DataCompra+
+                                '</div>'+
+                            '</div>'+
+                        '</div>';
+                    }
+                    else
+                    {
+                        //Linha par
+                        //faz o texto com background lightgrey
+                        texto = texto+
+                        '<div style="grid-template-rows: 1fr; display: grid">'+
+                            '<div style="grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr; display: grid; background-color:lightgray">'+
+                                '<div>'+
+                                    $BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao+
+                                '</div>'+
+                                '<div>'+
+                                    $BancoDeDados_Acoes[i].CorretoraAcao+
+                                '</div>'+
+                                '<div>'+
+                                    $BancoDeDados_Acoes[i].QuantidadeRestante+
+                                '</div>'+
+                                '<div>'+
+                                    ($BancoDeDados_Acoes[i].CustoAcao*1).toFixed(2)+
+                                '</div>'+
+                                '<div>'+
+                                    (PrecoLiquidoTotal/$BancoDeDados_Acoes[i].QuantidadeRestante).toFixed(4)+
+                                '</div>'+
+                                '<div>'+
+                                    $BancoDeDados_Acoes[i].DataCompra+
+                                '</div>'+
+                            '</div>'+
+                        '</div>';
+                    }
+
+                    if(i+1!=$BancoDeDados_Acoes.length)
+                    {
+                        //Não é o ultimo termo
+                        if($BancoDeDados_Acoes[i].NomeAcao!=$BancoDeDados_Acoes[i+1].NomeAcao)
+                        {   
+                            //Adiona uma linha entre os tipos de ações
+                            texto = texto+ '<div style="grid-template-rows: 1fr; display: grid"> <br> </div>';
+                            NumeroLinha=1;//Reinicia a Variavel para colocar background lightgrey em cada linha 
+                        }
+                        else
+                        {
+                            //São as mesmas ações
+                            NumeroLinha=NumeroLinha+1;//Informa nova linha para a Variavel para colocar background lightgrey em cada linha 
+                        }
+                    }
+                }
+                texto = texto+
+                '</div>'+
+                '<div>'+
+                    '<h2>Cadastrar Venda</h2>'+
+                    '<div style="grid-template-columns: 1fr 1fr; display: grid">'+
+                        '<div style="text-align: right;">'+
+                            '<label for="NomeAcao">Nome da Ação:</label><br><br>'+
+                            '<label for="QuantidadeAcaoVendida">Quantidade da Ações Vendidas:</label><br><br>'+
+                            '<label for="PrecoVendido">Valor da Venda Unitário da NF:</label><br><br>'+
+                            '<label for="NotaFiscalAcao">Nota Fiscal da Ação:</label><br><br>'+
+                            '<label for="DataVenda">Data da venda da Ação:</label><br><br>'+
+                        '</div>'+
+                        '<div>'+
+                            '<form method="POST" action="PHP/RegistraVenda.php" id="RegistraVenda">'+
+                                '<select name="NomeAcao" id="NomeAcao">;';
+                                for (i=0;i<$BancoDeDados_Acoes.length;i++)
+                                {
+                                    valor = '{"NomeAcao":"'+$BancoDeDados_Acoes[i].NomeAcao+'","CodigoAcao":"'+$BancoDeDados_Acoes[i].CodigoAcao+'","CorretoraAcao":"'+$BancoDeDados_Acoes[i].CorretoraAcao+'"}';
+                                    texto = texto+
+                                    '<option value='+valor+'> '+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao+'</option>';
+                                }
+                                texto = texto+
+                                '</select><br><br>'+
+                                '<input type="number" name="QuantidadeAcaoVendida" id="QuantidadeAcaoVendida" min="0" placeholder="Quantidade" required><br><br>'+
+                                '<input type="number" name="PrecoVendido" id="PrecoVendido" min="0" placeholder="Valor Bruto da Venda" step="0.001" onchange="ColocarOzero()" required><br><br>'+
+                                '<input type="number" name="NotaFiscalAcao" id="NotaFiscalAcao" min="0" placeholder="Nota Fiscal" required><br><br>'+
+                                '<input type="date" name="DataVenda" id="DataVenda" style="width: 172px;" required><br><br>'+
+                            '</form>'+
+                        '</div>'+
+                    '</div>'+
+                    '<div style="text-align: center;">'+
+                        '<div>'+
+                            '<input type="submit" value="Cadastrar Venda de Ações" form="RegistraVenda">'+
+                        '</div>'+
+                    '</div>'+
+                '</div>';
+                document.getElementById("DivMudanca").innerHTML = texto;
+            }
+
+
+
+            /** Fonte: <https://www.golangprograms.com/javascript-sort-multi-dimensional-array-on-specific-columns.html>
+            * Sorts an array of objects by column/property.
+            * @param {Array} array - The array of objects.
+            * @param {object} sortObject - The object that contains the sort order keys with directions (asc/desc). e.g. { age: 'desc', name: 'asc' }
+            * @returns {Array} The sorted array.
+            */
+            function multiSort(array, sortObject = {}) 
+            {
+                const sortKeys = Object.keys(sortObject);
+
+                // Return array if no sort object is supplied.
+                if (!sortKeys.length) 
+                {
+                    return array;
+                }
+
+                // Change the values of the sortObject keys to -1, 0, or 1.
+                for (let key in sortObject) 
+                {
+                    sortObject[key] = sortObject[key] === 'desc' || sortObject[key] === -1 ? -1 : (sortObject[key] === 'skip' || sortObject[key] === 0 ? 0 : 1);
+                }
+
+                const keySort = (a, b, direction) => 
+                { 
+                    direction = direction !== null ? direction : 1;
+
+                    if (a === b) 
+                    { // If the values are the same, do not switch positions.
+                        return 0;
+                    }
+
+                    // If b > a, multiply by -1 to get the reverse direction.
+                    return a > b ? direction : -1 * direction;
+                };
+
+                return array.sort((a, b) => 
+                {
+                    let sorted = 0;
+                    let index = 0;
+
+                    // Loop until sorted (-1 or 1) or until the sort keys have been processed.
+                    while (sorted === 0 && index < sortKeys.length) 
+                    {
+                        const key = sortKeys[index];
+
+                        if (key) 
+                        {
+                            const direction = sortObject[key];
+
+                            sorted = keySort(a[key], b[key], direction);
+                            index++;
+                        }
+                    }
+
+                    return sorted;
+                });
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,142 @@
+body
+{
+    padding:0px;
+    margin:0px;
+    font-size: larger;
+}
+
+h1, h2
+{
+    text-align: center;
+}
+
+/*
+-------------------------------------------
+Dropdown Menu
+-------------------------------------------
+Dropdown Menu - Inicio
+*/
+.menu 
+{
+    overflow: hidden;
+    background-color:#202020;
+    width: 100%;
+}
+
+.menu a 
+{
+    float: left;
+    font-size: 18px;
+    text-align: center;
+    padding: 14px 16px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.menu-dropdown 
+{
+    float: left;
+    overflow: hidden;
+}
+
+.menu-dropdown .botao-dropdown 
+{
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    outline: none;
+    color: white;
+    padding: 14px 16px;
+    background-color: inherit;
+    /*font-family: inherit;*/
+    margin: 0;
+}
+
+.menu a:hover, .menu-dropdown:hover .botao-dropdown 
+{
+    background-color:gray;
+    color: #000;
+}
+
+.conteudo-dropdown 
+{
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.conteudo-dropdown a {
+    float: none;
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.conteudo-dropdown a:hover {
+  background-color: #ddd;
+}
+
+.menu-dropdown:hover .conteudo-dropdown {
+  display: block;
+}
+
+/*
+Dropdown Menu - Fim
+*/
+
+.PaginaAtiva
+{
+    background-color:#080808;
+    /*padding: 11px 0px;*/
+}
+
+#titulo
+{
+    padding:0px;
+    margin:0px;
+    background-color:#080808;
+    color:#fff;
+}
+
+footer
+{
+    text-align: center;
+    background-color:#080808;
+    color:#fff;
+}
+
+.Navegacao
+{
+    background-color:gray;
+    width: 100%;
+}
+.Navegacao ul 
+{
+    padding:0px;
+    margin:0px;
+    list-style: none;
+    font-weight: bold;
+}
+.Navegacao ul li
+{
+    display: inline; 
+}
+.Navegacao ul li a
+{
+    padding: 0px 10px;
+    display: inline-block;
+    /* visual do link */
+    color: #000000;
+    text-decoration: none;
+}
+.Navegacao ul li a:hover 
+{
+    background-color:#000000;
+    color: #ffffff;
+}

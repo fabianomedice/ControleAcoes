@@ -1,0 +1,202 @@
+<!DOCTYPE html> 
+
+<html lang="pt-br" style="scroll-behavior: smooth;">
+	<head>
+		<!-- Titulo da aba-->
+		<title> 
+			Controle de Ações de Vanderlei
+		</title>
+		<!-- Metadados -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="author" content="Fabiano Médice">
+        <link rel="stylesheet" type="text/css" href="CSS/style.css">
+	</head>
+	<body>
+        <header>
+            <nav class="menu">
+                <div class="menu-dropdown">
+                    <button class="botao-dropdown">Consultas</button>
+                    <div class="conteudo-dropdown">
+                        <a href="resumo.html">Carteira de Ações Atuais</a>
+                        <a href="controlelucroprejuizo.html">Controle de Lucro e Prejuízo</a>
+                        <a href="historico.html">Histórico de Notas Fiscais</a>
+                        <a href="imposto.html">Imposto Devido Mensal</a>
+                    </div>
+                </div>    
+                <div class="menu-dropdown PaginaAtiva">
+                    <button class="botao-dropdown">Cadastros</button>
+                    <div class="conteudo-dropdown">
+                        <a href="compra.html">Compra de Ações</a>
+                        <a href="venda.html">Venda de Ações</a>
+                        <a href="notafiscal.html">Nota Fiscal</a>
+                    </div>
+                </div>    
+                <div class="menu-dropdown">
+                    <button class="botao-dropdown">Modificações</button>
+                    <div class="conteudo-dropdown">
+                        <a href="mudancavenda.html">Modificar Venda</a>
+                        <a href="cancelarcadastro.html">Cancelar Cadastro</a>
+                    </div>
+                </div>
+                <div class="menu-dropdown" >
+                    <button class="botao-dropdown" onclick="window.location.href='index.html';">Sobre</button>
+                </div>
+            </nav>
+            <h1 id="titulo">Registro de Nota Fiscal para Cálcular Imposto e Valores Líquidos </h1>     
+        </header>
+        
+        <section >
+            <h2>Declaração de Valores da Nota Fiscal Diária</h2>
+
+            <form method="POST" action="PHP/RegistraNF.php" id="RegistraNF">
+                <!-- Cria o Formulário -->
+            </form>
+
+            <div style="grid-template-columns: 2fr 17fr 2fr; display: grid">
+                <div><!-- div vazia --></div>
+                <div>
+                    <div style="grid-template-rows: 1fr; display: grid;">
+                        <div style="grid-template-columns: 8fr 1fr 8fr; display: grid">
+                            <div style="text-align: right;">
+                                <label for="CorretoraNF">Corretora:</label>
+                            </div>
+                            <div><!-- div vazia --></div>
+                            <div>
+                                <select style="width: 177px; height: 21px;" id='CorretoraNF' name='CorretoraNF' form="RegistraNF">
+                                    <option value="Ativa"> Ativa</option>
+                                    <option value="BB"> Banco do Brasil</option>
+                                    <option value="Bradesco"> Bradesco</option>
+                                    <option value="Rico"> Rico</option>
+                                </select>
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                    <div style="grid-template-rows: 1fr; display: grid;">
+                        <div style="grid-template-columns: 8fr 1fr 8fr; display: grid">
+                            <div style="text-align: right;">
+                                <label for="NumeroNotaFiscal">Número Nota Fiscal:</label>
+                            </div>
+                            <div><!-- div vazia --></div>
+                            <div>
+                                <input type="text" name="NumeroNotaFiscal" id="NumeroNotaFiscal" min="0" placeholder="Número Nota Fiscal" style="height: 15px;" required form="RegistraNF">
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                    <div style="grid-template-rows: 1fr; display: grid;">
+                        <div style="grid-template-columns: 8fr 1fr 8fr; display: grid">
+                            <div style="text-align: right;">
+                                <label for="DataNotafiscal">Data da operação da Nota Fiscal:</label>
+                            </div>
+                            <div><!-- div vazia --></div>
+                            <div>
+                                <input type="date" name="DataNotafiscal" id="DataNotafiscal" style="width: 172px; height: 17px;"  required form="RegistraNF">
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                    <div style="grid-template-rows: 1fr; display: grid;">
+                        <div style="grid-template-columns: 8fr 1fr 8fr; display: grid">
+                            <div style="text-align: right;">
+                                <label for="ValorOperacoesTotais">Valor Total das Operações da Nota Fiscal:</label>
+                            </div>
+                            <div><!-- div vazia --></div>
+                            <div>
+                                <input type="number" name="ValorOperacoesTotais" id="ValorOperacoesTotais" placeholder="Valor Total das Operações" style="height: 15px;" step="0.01" required form="RegistraNF">
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                    <div style="grid-template-rows: 1fr; display: grid;">
+                        <div style="grid-template-columns: 8fr 1fr 8fr; display: grid">
+                            <div style="text-align: right;">
+                                <label for="TaxaLiquidacao">Taxa da Liquidação da Nota Fiscal:</label>
+                            </div>
+                            <div><!-- div vazia --></div>
+                            <div>
+                                <input type="number" name="TaxaLiquidacao" id="TaxaLiquidacao" placeholder="Taxa da Liquidação" style="height: 15px;" step="0.01" required form="RegistraNF">
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                    <div style="grid-template-rows: 1fr; display: grid;">
+                        <div style="grid-template-columns: 8fr 1fr 8fr; display: grid">
+                            <div style="text-align: right;">
+                                <label for="Emolumentos">Emolumentos da Nota Fiscal:</label>
+                            </div>
+                            <div><!-- div vazia --></div>
+                            <div>
+                                <input type="number" name="Emolumentos" id="Emolumentos" placeholder="Emolumentos" style="height: 15px;" step="0.01" required form="RegistraNF">
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                    <div style="grid-template-rows: 1fr; display: grid;">
+                        <div style="grid-template-columns: 8fr 1fr 8fr; display: grid">
+                            <div style="text-align: right;">
+                                <label for="TaxaOperacao">Corretagem ou Taxa de Operação da Nota Fiscal:<br>Ativa - Corretagem<br> BB - Corretagem<br>Rico  - Taxa de Operação</label>
+                            </div>
+                            <div><!-- div vazia --></div>
+                            <div>
+                                <input type="number" name="TaxaOperacao" id="TaxaOperacao" placeholder="Corretagem/Taxa de Operação" style="height: 15px;" step="0.01" required form="RegistraNF">
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                    <div style="grid-template-rows: 1fr; display: grid;">
+                        <div style="grid-template-columns: 8fr 1fr 8fr; display: grid">
+                            <div style="text-align: right;">
+                                <label for="Imposto">Imposto ou ISS da Nota Fiscal: <br>Ativa - ISS<br> BB - 0,00 <br> Rico - Imposto</label>
+                            </div>
+                            <div><!-- div vazia --></div>
+                            <div>
+                                <input type="number" name="Imposto" id="Imposto" placeholder="Imposto ou ISS" step="0.01" required form="RegistraNF">
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                    <div style="grid-template-rows: 1fr; display: grid;">
+                        <div style="grid-template-columns: 8fr 1fr 8fr; display: grid">
+                            <div style="text-align: right;">
+                                <label for="IRRFvista">I.R.R.F. venda à vista da Nota Fiscal:</label>
+                            </div>
+                            <div><!-- div vazia --></div>
+                            <div>
+                                <input type="number" name="IRRFvista" id="IRRFvista" placeholder="IRRF à vista" step="0.01" required form="RegistraNF">
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                    <div style="grid-template-rows: 1fr; display: grid;">
+                        <div style="grid-template-columns: 8fr 1fr 8fr; display: grid">
+                            <div style="text-align: right;">
+                                <label for="IRRFDayTrade">I.R.R.F. venda DayTrade da Nota Fiscal:</label>
+                            </div>
+                            <div><!-- div vazia --></div>
+                            <div>
+                                <input type="number" name="IRRFDayTrade" id="IRRFDayTrade" placeholder="IRRF DayTrade" step="0.01" required form="RegistraNF">
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <div>
+                    <input type="submit" value="Registrar Nota Fiscal" form="RegistraNF">
+                </div>
+            </div>
+            
+            <br><br>
+                
+        </section>
+        <footer>
+            <b>Feito por Fabiano Médice<br>2020</b>
+        </footer>
+        <script>
+        
+        </script>
+    </body>
+</html>

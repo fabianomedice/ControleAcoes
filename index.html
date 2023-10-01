@@ -1,0 +1,86 @@
+<!DOCTYPE html> 
+
+<html lang="pt-br" style="scroll-behavior: smooth;">
+	<head>
+		<!-- Titulo da aba-->
+		<title> 
+			Controle de Ações de Vanderlei
+		</title>
+		<!-- Metadados -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="author" content="Fabiano Médice">
+        <link rel="stylesheet" type="text/css" href="CSS/style.css">
+	</head>
+	<body>
+        <header>
+            <nav class="menu">
+                <div class="menu-dropdown">
+                    <button class="botao-dropdown">Consultas</button>
+                    <div class="conteudo-dropdown">
+                        <a href="resumo.html">Carteira de Ações Atuais</a>
+                        <a href="controlelucroprejuizo.html">Controle de Lucro e Prejuízo</a>
+                        <a href="historico.html">Histórico de Notas Fiscais</a>
+                        <a href="imposto.html">Imposto Devido Mensal</a>
+                    </div>
+                </div>    
+                <div class="menu-dropdown">
+                    <button class="botao-dropdown">Cadastros</button>
+                    <div class="conteudo-dropdown">
+                        <a href="compra.html">Compra de Ações</a>
+                        <a href="venda.html">Venda de Ações</a>
+                        <a href="notafiscal.html">Nota Fiscal</a>
+                    </div>
+                </div>    
+                <div class="menu-dropdown">
+                    <button class="botao-dropdown">Modificações</button>
+                    <div class="conteudo-dropdown">
+                        <a href="mudancavenda.html">Modificar Venda</a>
+                        <a href="cancelarcadastro.html">Cancelar Cadastro</a>
+                    </div>
+                </div>
+                <div class="menu-dropdown PaginaAtiva" >
+                    <button class="botao-dropdown" onclick="window.location.href='index.html';">Sobre</button>
+                </div>
+            </nav>
+            <h1 id="titulo">Sobre</h1>     
+        </header>
+        
+        <section >
+            <h2>Sobre esse site</h2>
+            <div style="grid-template-columns: 2fr 6fr 2fr; display: grid">
+                <div><!-- div vazia --></div>
+                <div>
+                    Ele não está ligado a internet, então funciona apenas com o computador ligado sem conexão à internet. <br>Por não estar na internet, ele só funcionará neste computador e tudo ficará salvo aqui.
+                </div>
+            </div>
+            
+            <h2>Como usá-lo</h2>
+            <div style="grid-template-columns: 2fr 6fr 2fr; display: grid">
+                <div><!-- div vazia --></div>
+                <div>
+                    A primeira aba "Consultas" serve para consultar tudo que está cadastrado no sistema.<br>
+                    É nela que se encontra a "Carteira de Ações Atuais" e todo o "Histórico de Operações" cadastrados.<br>
+                    É nesta aba também que se encontra o "Controle de Lucro e Prejuízo" e o "Imposto Mensal" para preencher o programa da Receita.<br>
+                    <br>
+                    A segunda aba "Cadastros" serve para realizar todos os cadastros no sistema para que ele calcule e organize tudo sozinho.<br>
+                    É nela que se encontra o "Compra de Ações", onde se registra todas as novas compras realizadas; o "Venda de Ações", onde se registra todas as vendas a partir das escolhas realidas; e o "Nota Fiscal", onde se registra todas as notas ficais diariamente para se calcular imposto e valores liquídos. <br>
+                    <br>
+                    A terceira aba "Modificações" serve para modificar qualquer cadastro realizado no sistema.<br>
+                    É nela que se encontra o "Modificar Venda", onde se altera o registro de venda a partir de outra ação da mesma corretora; e o "Cancela Cadastro", onde se cancela um cadastro realizado em até 3 dias. <br>
+                    
+
+                </div>
+            </div>
+        
+            <br><br>
+                
+        </section>
+        <footer>
+            <b>Feito por Fabiano Médice<br>2020</b>
+        </footer>
+        <script>
+        
+        </script>
+    </body>
+</html>

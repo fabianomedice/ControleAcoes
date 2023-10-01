@@ -1,0 +1,620 @@
+<!DOCTYPE html> 
+
+<html lang="pt-br" style="scroll-behavior: smooth;">
+	<head>
+		<!-- Titulo da aba-->
+		<title> 
+			Controle de Ações de Vanderlei
+		</title>
+		<!-- Metadados -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="author" content="Fabiano Médice">
+        <link rel="stylesheet" type="text/css" href="CSS/style.css">
+	</head>
+	<body>
+        <header>
+            <nav class="menu">
+                <div class="menu-dropdown PaginaAtiva">
+                    <button class="botao-dropdown">Consultas</button>
+                    <div class="conteudo-dropdown">
+                        <a href="resumo.html">Carteira de Ações Atuais</a>
+                        <a href="controlelucroprejuizo.html">Controle de Lucro e Prejuízo</a>
+                        <a href="historico.html">Histórico de Notas Fiscais</a>
+                        <a href="imposto.html">Imposto Devido Mensal</a>
+                    </div>
+                </div>    
+                <div class="menu-dropdown">
+                    <button class="botao-dropdown">Cadastros</button>
+                    <div class="conteudo-dropdown">
+                        <a href="compra.html">Compra de Ações</a>
+                        <a href="venda.html">Venda de Ações</a>
+                        <a href="notafiscal.html">Nota Fiscal</a>
+                    </div>
+                </div>    
+                <div class="menu-dropdown">
+                    <button class="botao-dropdown">Modificações</button>
+                    <div class="conteudo-dropdown">
+                        <a href="mudancavenda.html">Modificar Venda</a>
+                        <a href="cancelarcadastro.html">Cancelar Cadastro</a>
+                    </div>
+                </div>
+                <div class="menu-dropdown" >
+                    <button class="botao-dropdown" onclick="window.location.href='index.html';">Sobre</button>
+                </div>
+            </nav>
+            <h1 id="titulo">Histórico de Notas Fiscais de Corretagem</h1>                 
+        </header>
+        
+        <section >
+            <div style="text-align: center;">
+                <br>
+                Selecione a duração : 
+                <select name="Duracao" id="Duracao" style="height: 21px; width: 145px;" onchange="MudancaDuracao()">
+                    <option value="1">Dia</option>
+                    <option value="7">Semana</option>
+                    <option value="30">Mês</option>
+                    <option value="60">2 Meses</option>
+                    <option value="Tudo">Tudo</option>
+                </select>
+            </div>
+            <h2 id="NomeHistorico">Histórico Diário</h2>
+            <div style="grid-template-columns: 1fr 12fr 1fr; display: grid">
+                <div><!-- div vazia --></div>
+                <div id="DivHistorico">
+                    <div style="grid-template-rows: 1fr; display: grid">
+                        <div style="grid-template-columns: repeat(7,1fr); display: grid">
+                            <div style="text-align: center;">Operação</div>
+                            <div style="text-align: center;">Ação</div>
+                            <div style="text-align: center;">Corretora</div>
+                            <div style="text-align: center;">Quantidade</div>
+                            <div style="text-align: center;">Valor</div>
+                            <div style="text-align: center;">Nota Fiscal</div>
+                            <div style="text-align: center;">Data</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <br><br>
+                
+        </section>
+        <footer>
+            <b>Feito por Fabiano Médice<br>2020</b>
+        </footer>
+        <script>
+            var $BancoDeDados_Acoes = [];
+            //Cria a data
+            var Ano = new Date().getFullYear();
+            var Mes = new Date().getMonth()+1;
+            var Dia = new Date().getDate();
+            var Data;
+            if (Dia<10)
+            {
+                if (Mes<10)
+                {
+                    //coloca o zero no dia e mes
+                    Data = Ano+"-0"+Mes+"-0"+Dia;
+                }
+                else
+                {
+                    //coloca o zero no dia
+                    Data = Ano+"-"+Mes+"-0"+Dia;
+                }
+            }
+            else
+            {
+                if (Mes<10)
+                {
+                    //coloca o zero no mes
+                    Data = Ano+"-0"+Mes+"-"+Dia;
+                }
+                else
+                {
+                    //salva a data normal
+                    Data = Ano+"-"+Mes+"-"+Dia;
+                }
+            }
+            //Faz a data final
+            var DataInicial = new Date();
+            DataInicial.setDate(DataInicial.getDate() - 1);
+            Ano=DataInicial.getFullYear();
+            Mes = DataInicial.getMonth()+1;
+            Dia = DataInicial.getDate();
+            if (Dia<10)
+            {
+                if (Mes<10)
+                {
+                    //coloca o zero no dia e mes
+                    DataInicial = Ano+"-0"+Mes+"-0"+Dia;
+                }
+                else
+                {
+                    //coloca o zero no dia
+                    DataInicial = Ano+"-"+Mes+"-0"+Dia;
+                }
+            }
+            else
+            {
+                if (Mes<10)
+                {
+                    //coloca o zero no mes
+                    DataInicial = Ano+"-0"+Mes+"-"+Dia;
+                }
+                else
+                {
+                    //salva a data normal
+                    DataInicial = Ano+"-"+Mes+"-"+Dia;
+                }
+            }
+            //Chama função para iniciar a página
+            Chamar_Banco_De_Dados_CompraVenda(DataInicial,"1")
+            
+
+            function MudancaDuracao()
+            {
+                switch (document.getElementById("Duracao").value)
+                {
+                    case "1":
+                        //Muda o Titulo
+                        document.getElementById("NomeHistorico").innerHTML = "Histórico Diário";
+                        //Configura os parametros
+                        Duracao = "1";
+                        //Faz a data final
+                        DataInicial = new Date();
+                        DataInicial.setDate(DataInicial.getDate() - 1);
+                        Ano=DataInicial.getFullYear();
+                        Mes = DataInicial.getMonth()+1;
+                        Dia = DataInicial.getDate();
+                        if (Dia<10)
+                        {
+                            if (Mes<10)
+                            {
+                                //coloca o zero no dia e mes
+                                DataInicial = Ano+"-0"+Mes+"-0"+Dia;
+                            }
+                            else
+                            {
+                                //coloca o zero no dia
+                                DataInicial = Ano+"-"+Mes+"-0"+Dia;
+                            }
+                        }
+                        else
+                        {
+                            if (Mes<10)
+                            {
+                                //coloca o zero no mes
+                                DataInicial = Ano+"-0"+Mes+"-"+Dia;
+                            }
+                            else
+                            {
+                                //salva a data normal
+                                DataInicial = Ano+"-"+Mes+"-"+Dia;
+                            }
+                        }
+                        //Chama função
+                        Chamar_Banco_De_Dados_CompraVenda(DataInicial,Duracao)
+                    break;
+                    case "7":
+                        //Muda o Titulo
+                        document.getElementById("NomeHistorico").innerHTML = "Histórico Semanal";
+                        //Configura os parametros
+                        Duracao = "7";
+                        //Faz a data final
+                        DataInicial = new Date();
+                        DataInicial.setDate(DataInicial.getDate() - 7);
+                        Ano=DataInicial.getFullYear();
+                        Mes = DataInicial.getMonth()+1;
+                        Dia = DataInicial.getDate();
+                        if (Dia<10)
+                        {
+                            if (Mes<10)
+                            {
+                                //coloca o zero no dia e mes
+                                DataInicial = Ano+"-0"+Mes+"-0"+Dia;
+                            }
+                            else
+                            {
+                                //coloca o zero no dia
+                                DataInicial = Ano+"-"+Mes+"-0"+Dia;
+                            }
+                        }
+                        else
+                        {
+                            if (Mes<10)
+                            {
+                                //coloca o zero no mes
+                                DataInicial = Ano+"-0"+Mes+"-"+Dia;
+                            }
+                            else
+                            {
+                                //salva a data normal
+                                DataInicial = Ano+"-"+Mes+"-"+Dia;
+                            }
+                        }
+                        //Chama função
+                        Chamar_Banco_De_Dados_CompraVenda(DataInicial,Duracao)
+                    break;
+                    case "30":
+                        //Muda o Titulo
+                        document.getElementById("NomeHistorico").innerHTML = "Histórico Mensal";
+                        //Configura os parametros
+                        Duracao = "30";
+                        //Faz a data final
+                        DataInicial = new Date();
+                        DataInicial.setDate(DataInicial.getDate() - 30);
+                        Ano=DataInicial.getFullYear();
+                        Mes = DataInicial.getMonth()+1;
+                        Dia = DataInicial.getDate();
+                        if (Dia<10)
+                        {
+                            if (Mes<10)
+                            {
+                                //coloca o zero no dia e mes
+                                DataInicial = Ano+"-0"+Mes+"-0"+Dia;
+                            }
+                            else
+                            {
+                                //coloca o zero no dia
+                                DataInicial = Ano+"-"+Mes+"-0"+Dia;
+                            }
+                        }
+                        else
+                        {
+                            if (Mes<10)
+                            {
+                                //coloca o zero no mes
+                                DataInicial = Ano+"-0"+Mes+"-"+Dia;
+                            }
+                            else
+                            {
+                                //salva a data normal
+                                DataInicial = Ano+"-"+Mes+"-"+Dia;
+                            }
+                        }
+                        //Chama função
+                        Chamar_Banco_De_Dados_CompraVenda(DataInicial,Duracao)
+                    break;
+                    case "60":
+                        //Muda o Titulo
+                        document.getElementById("NomeHistorico").innerHTML = "Histórico Bimensal";
+                        //Configura os parametros
+                        Duracao = "60";
+                        //Faz a data final
+                        DataInicial = new Date();
+                        DataInicial.setDate(DataInicial.getDate() - 60);
+                        Ano=DataInicial.getFullYear();
+                        Mes = DataInicial.getMonth()+1;
+                        Dia = DataInicial.getDate();
+                        if (Dia<10)
+                        {
+                            if (Mes<10)
+                            {
+                                //coloca o zero no dia e mes
+                                DataInicial = Ano+"-0"+Mes+"-0"+Dia;
+                            }
+                            else
+                            {
+                                //coloca o zero no dia
+                                DataInicial = Ano+"-"+Mes+"-0"+Dia;
+                            }
+                        }
+                        else
+                        {
+                            if (Mes<10)
+                            {
+                                //coloca o zero no mes
+                                DataInicial = Ano+"-0"+Mes+"-"+Dia;
+                            }
+                            else
+                            {
+                                //salva a data normal
+                                DataInicial = Ano+"-"+Mes+"-"+Dia;
+                            }
+                        }
+                        //Chama função
+                        Chamar_Banco_De_Dados_CompraVenda(DataInicial,Duracao)
+                    break;
+                    default:
+                        //Muda o Titulo
+                        document.getElementById("NomeHistorico").innerHTML = "Histórico Total";
+                        //Configura os parametros
+                        Duracao = "Tudo";
+                        DataInicial = Data;
+                        //Chama função
+                        Chamar_Banco_De_Dados_CompraVenda(DataInicial,Duracao)
+                }
+            }
+
+            // -------------------------------------------------------
+            // Chamada do banco de dados das ações
+            // -------------------------------------------------------
+            function Chamar_Banco_De_Dados_CompraVenda(DataInicial,Duracao) 
+            {
+                
+                var xhttp;
+                xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() 
+                {
+                    if (this.readyState == 4 && this.status == 200) 
+                    {
+                        if(this.responseText == "Nenhuma Ação Encontrada")
+                        {
+                            document.getElementById("DivHistorico").innerHTML = this.responseText;
+                        }
+                        else
+                        {
+                            $BancoDeDados_Acoes = JSON.parse(this.responseText);
+                            Chamar_Banco_De_Dados_NF(DataInicial,Duracao)
+                            //console.log($BancoDeDados_Acoes)
+                            //document.getElementById("DivHistorico").innerHTML = this.responseText;
+                        }
+                    }
+                }
+                xhttp.open("POST", "PHP/Historico.php", false); //o false não deixa ser assincrono
+                xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhttp.send("DataInicial="+DataInicial+"&DataFinal="+Data+"&Duracao="+Duracao);
+            }
+
+            // -------------------------------------------------------
+            // Chamada do banco de dados das Notas Fiscais
+            // -------------------------------------------------------
+            function Chamar_Banco_De_Dados_NF(DataInicial,Duracao) 
+            {
+                var xhttp;
+                xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() 
+                {
+                    if (this.readyState == 4 && this.status == 200) 
+                    {
+                        if(this.responseText == "Nenhuma Nota Fiscal Encontrada")
+                        {
+                            $BancoDeDados_NF = this.responseText;
+                        }
+                        else
+                        {
+                            $BancoDeDados_NF = JSON.parse(this.responseText);
+                            
+                            //document.getElementById("DivHistorico").innerHTML = this.responseText;
+                        }
+                        OrganizaBancoDeDados();
+                    }
+                }
+                xhttp.open("POST", "PHP/HistoricoNF.php", false); //o false não deixa ser assincrono
+                xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhttp.send("DataInicial="+DataInicial+"&DataFinal="+Data+"&Duracao="+Duracao);
+            }
+
+            // -------------------------------------------------------
+            // Organiza o Banco de Dados Enviados e cria divs
+            // -------------------------------------------------------
+            function OrganizaBancoDeDados()
+            {
+                //organiza o banco de dados
+                multiSort($BancoDeDados_Acoes, {Data: 'asc',CorretoraAcao: 'asc', NotaFiscalAcao: 'asc', NomeAcao: 'asc', CodigoAcao: 'asc'})
+
+                if($BancoDeDados_NF != "Nenhuma Nota Fiscal Encontrada")
+                {
+                    //Tem array para arrumar
+                    multiSort($BancoDeDados_NF, {Data: 'asc', CorretoraNF: 'asc', NotaFiscal: 'asc'})
+                }
+                
+                var texto="";
+                
+                for (i=0;i<$BancoDeDados_Acoes.length;i++)
+                {
+                    if(i-1>=0)
+                    {
+                        //Não é o primeiro número
+                        if($BancoDeDados_Acoes[i].Data != $BancoDeDados_Acoes[i-1].Data || $BancoDeDados_Acoes[i].CorretoraAcao != $BancoDeDados_Acoes[i-1].CorretoraAcao || $BancoDeDados_Acoes[i].NotaFiscalAcao != $BancoDeDados_Acoes[i-1].NotaFiscalAcao)
+                        {
+                            //Ambos não estão na mesma Nota Fiscal
+                            texto = texto+
+                            '<br>'+
+                            '<div style="grid-template-rows: 1fr; display: grid">';
+
+                            NumeroLinha=1;//Reseta a Variavel para colocar background lightgrey em cada linha 
+
+                            var QuantidadeNF = $BancoDeDados_NF.length; //teste para conferencia de Nota Fiscal
+                            for(j=0;j<$BancoDeDados_NF.length;j++)
+                            {
+                                if($BancoDeDados_Acoes[i].Data == $BancoDeDados_NF[j].Data && $BancoDeDados_Acoes[i].CorretoraAcao == $BancoDeDados_NF[j].CorretoraNF && $BancoDeDados_Acoes[i].NotaFiscalAcao == $BancoDeDados_NF[j].NotaFiscal)
+                                {
+                                    texto = texto+'Nota Fiscal: '+$BancoDeDados_NF[j].CorretoraNF+'<br>Data: '+$BancoDeDados_NF[j].Data+ ' / Número: '+$BancoDeDados_NF[j].NotaFiscal;
+                                    var CustoTotalOperacao = $BancoDeDados_NF[j].CustoTotalOperacao;
+                                    var ValorOperacoesTotais = $BancoDeDados_NF[j].ValorOperacoesTotais;
+                                }
+                                else
+                                {
+                                    //Não achou a Nota Fiscal
+                                    QuantidadeNF = QuantidadeNF-1;
+                                    if(QuantidadeNF==0)
+                                    {
+                                        //não achou a Nota Fiscal
+                                        texto = texto+'<span style="background-color: red;color: white;">NOTA FISCAL NÃO CADASTRADA</span>'+'Nota Fiscal: '+$BancoDeDados_Acoes[i].CorretoraAcao+'<br>Data: '+$BancoDeDados_Acoes[i].Data+ ' / Número: '+$BancoDeDados_Acoes[i].NotaFiscalAcao;
+                                        var CustoTotalOperacao = 0;
+                                        var ValorOperacoesTotais = 0;
+                                    }
+                                }
+                            }    
+                            texto = texto+    
+                            '</div>'+
+                            '<div style="grid-template-rows: 1fr; display: grid">'+
+                                '<div style="grid-template-columns: repeat(7,1fr); display: grid">'+
+                                    '<div style="text-align: center;">Tipo de Operação</div>'+
+                                    '<div style="text-align: center;">Ação</div>'+
+                                    '<div style="text-align: center;">Quantidade</div>'+
+                                    '<div style="text-align: center;">Valor Unitário NF</div>'+
+                                    '<div style="text-align: center;">Valor Total NF</div>'+
+                                    '<div style="text-align: center;">Valor Total da Operação</div>'+
+                                    '<div style="text-align: center;">Valor Unitário da Operação</div>'+
+                                '</div>'+
+                            '</div>';
+                        }
+                        else
+                        {
+                            //Estão na mesma nota fiscal
+                            NumeroLinha=NumeroLinha+1;//Informa nova linha para a Variavel para colocar background lightgrey em cada linha 
+                        }
+                    }
+                    else
+                    {
+                        //É o primeiro número
+                        var NumeroLinha=1;//Variavel para colocar background lightgrey em cada linha 
+                        //coloca a Nota Fiscal dele
+                        texto = texto+
+                        '<div style="grid-template-rows: 1fr; display: grid">';
+                        var QuantidadeNF = $BancoDeDados_NF.length; //teste para conferencia de Nota Fiscal
+                        for(j=0;j<$BancoDeDados_NF.length;j++)
+                        {
+                            if($BancoDeDados_Acoes[i].Data == $BancoDeDados_NF[j].Data && $BancoDeDados_Acoes[i].CorretoraAcao == $BancoDeDados_NF[j].CorretoraNF && $BancoDeDados_Acoes[i].NotaFiscalAcao == $BancoDeDados_NF[j].NotaFiscal)
+                            {
+                                //Achou a Nota Fiscal
+                                texto = texto+'Nota Fiscal: '+$BancoDeDados_NF[j].CorretoraNF+'<br>Data: '+$BancoDeDados_NF[j].Data+ ' / Número: '+$BancoDeDados_NF[j].NotaFiscal;
+                                var CustoTotalOperacao = $BancoDeDados_NF[j].CustoTotalOperacao;
+                                var ValorOperacoesTotais = $BancoDeDados_NF[j].ValorOperacoesTotais;
+                            }
+                            else
+                            {
+                                //Não achou a Nota Fiscal
+                                QuantidadeNF = QuantidadeNF-1;
+                                if(QuantidadeNF==0)
+                                {
+                                    //não achou a Nota Fiscal
+                                    texto = texto+'<span style="background-color: red;color: white;">NOTA FISCAL NÃO CADASTRADA</span>'+'Nota Fiscal: '+$BancoDeDados_Acoes[i].CorretoraAcao+'<br>Data: '+$BancoDeDados_Acoes[i].Data+ ' / Número: '+$BancoDeDados_Acoes[i].NotaFiscalAcao;
+                                    var CustoTotalOperacao = 0;
+                                    var ValorOperacoesTotais = 0;
+                                }
+                            }
+                        }
+                        texto = texto+
+                        '</div>'+
+                        '<div style="grid-template-rows: 1fr; display: grid">'+
+                            '<div style="grid-template-columns: repeat(7,1fr); display: grid">'+
+                                '<div style="text-align: center;">Tipo de Operação</div>'+
+                                '<div style="text-align: center;">Ação</div>'+
+                                '<div style="text-align: center;">Quantidade</div>'+
+                                '<div style="text-align: center;">Valor Unitário NF</div>'+
+                                '<div style="text-align: center;">Valor Total NF</div>'+
+                                '<div style="text-align: center;">Valor Total da Operação</div>'+
+                                '<div style="text-align: center;">Valor Unitário da Operação</div>'+
+                            '</div>'+
+                        '</div>';
+                    }
+
+                    //Calculo do preço líquido
+                    if($BancoDeDados_Acoes[i].Operacao == "Compra")
+                    {
+                        //Soma o custo da operação
+                        PrecoLiquidoTotal = ($BancoDeDados_Acoes[i].Custo*$BancoDeDados_Acoes[i].Quantidade+$BancoDeDados_Acoes[i].Quantidade*$BancoDeDados_Acoes[i].Custo/ValorOperacoesTotais*CustoTotalOperacao).toFixed(2);
+                    }
+                    else
+                    {
+                        //Subtrai o custo da operação
+                        PrecoLiquidoTotal = ($BancoDeDados_Acoes[i].Custo*$BancoDeDados_Acoes[i].Quantidade-$BancoDeDados_Acoes[i].Quantidade*$BancoDeDados_Acoes[i].Custo/ValorOperacoesTotais*CustoTotalOperacao).toFixed(2);
+                    }
+                    if(NumeroLinha%2==1)
+                    {
+                        //Linha inicial ou impar
+                        //faz o texto com com background branco/normal
+                        texto = texto+
+                        '<div style="grid-template-rows: 1fr; display: grid">'+
+                            '<div style="grid-template-columns: repeat(7,1fr); display: grid; text-align: center">'+
+                                '<div>'+$BancoDeDados_Acoes[i].Operacao+'</div>'+
+                                '<div>'+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao+'</div>'+
+                                '<div>'+$BancoDeDados_Acoes[i].Quantidade+'</div>'+
+                                '<div>'+($BancoDeDados_Acoes[i].Custo*1).toFixed(2)+'</div>'+
+                                '<div>'+($BancoDeDados_Acoes[i].Custo*$BancoDeDados_Acoes[i].Quantidade).toFixed(2)+'</div>'+
+                                '<div>'+PrecoLiquidoTotal+'</div>'+
+                                '<div>'+(PrecoLiquidoTotal/$BancoDeDados_Acoes[i].Quantidade).toFixed(4)+'</div>'+
+                            '</div>'+
+                        '</div>';
+                    }
+                    else
+                    {
+                        //Linha par
+                        //faz o texto com background lightgrey
+                        texto = texto+
+                        '<div style="grid-template-rows: 1fr; display: grid">'+
+                            '<div style="grid-template-columns: repeat(7,1fr); display: grid; text-align: center; background-color:lightgray">'+
+                                '<div>'+$BancoDeDados_Acoes[i].Operacao+'</div>'+
+                                '<div>'+$BancoDeDados_Acoes[i].NomeAcao+" - "+$BancoDeDados_Acoes[i].CodigoAcao+'</div>'+
+                                '<div>'+$BancoDeDados_Acoes[i].Quantidade+'</div>'+
+                                '<div>'+($BancoDeDados_Acoes[i].Custo*1).toFixed(2)+'</div>'+
+                                '<div>'+($BancoDeDados_Acoes[i].Custo*$BancoDeDados_Acoes[i].Quantidade).toFixed(2)+'</div>'+
+                                '<div>'+PrecoLiquidoTotal+'</div>'+
+                                '<div>'+(PrecoLiquidoTotal/$BancoDeDados_Acoes[i].Quantidade).toFixed(4)+'</div>'+
+                            '</div>'+
+                        '</div>';
+                    }                    
+                }
+                document.getElementById("DivHistorico").innerHTML = texto;
+            }
+
+
+
+
+
+
+
+            /** Fonte: <https://www.golangprograms.com/javascript-sort-multi-dimensional-array-on-specific-columns.html>
+            * Sorts an array of objects by column/property.
+            * @param {Array} array - The array of objects.
+            * @param {object} sortObject - The object that contains the sort order keys with directions (asc/desc). e.g. { age: 'desc', name: 'asc' }
+            * @returns {Array} The sorted array.
+            */
+            function multiSort(array, sortObject = {}) 
+            {
+                const sortKeys = Object.keys(sortObject);
+
+                // Return array if no sort object is supplied.
+                if (!sortKeys.length) 
+                {
+                    return array;
+                }
+
+                // Change the values of the sortObject keys to -1, 0, or 1.
+                for (let key in sortObject) 
+                {
+                    sortObject[key] = sortObject[key] === 'desc' || sortObject[key] === -1 ? -1 : (sortObject[key] === 'skip' || sortObject[key] === 0 ? 0 : 1);
+                }
+
+                const keySort = (a, b, direction) => 
+                { 
+                    direction = direction !== null ? direction : 1;
+
+                    if (a === b) 
+                    { // If the values are the same, do not switch positions.
+                        return 0;
+                    }
+
+                    // If b > a, multiply by -1 to get the reverse direction.
+                    return a > b ? direction : -1 * direction;
+                };
+
+                return array.sort((a, b) => 
+                {
+                    let sorted = 0;
+                    let index = 0;
+
+                    // Loop until sorted (-1 or 1) or until the sort keys have been processed.
+                    while (sorted === 0 && index < sortKeys.length) 
+                    {
+                        const key = sortKeys[index];
+
+                        if (key) 
+                        {
+                            const direction = sortObject[key];
+
+                            sorted = keySort(a[key], b[key], direction);
+                            index++;
+                        }
+                    }
+
+                    return sorted;
+                });
+            }
+
+        </script>
+    </body>
+</html>

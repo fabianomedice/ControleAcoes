@@ -1,0 +1,560 @@
+<!DOCTYPE html> 
+
+<html lang="pt-br" style="scroll-behavior: smooth;">
+	<head>
+		<!-- Titulo da aba-->
+		<title> 
+			Controle de Ações de Vanderlei
+		</title>
+		<!-- Metadados -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="author" content="Fabiano Médice">
+        <link rel="stylesheet" type="text/css" href="CSS/style.css">
+	</head>
+	<body>
+        <header>
+            <nav class="menu">
+                <div class="menu-dropdown">
+                    <button class="botao-dropdown">Consultas</button>
+                    <div class="conteudo-dropdown">
+                        <a href="resumo.html">Carteira de Ações Atuais</a>
+                        <a href="controlelucroprejuizo.html">Controle de Lucro e Prejuízo</a>
+                        <a href="historico.html">Histórico de Notas Fiscais</a>
+                        <a href="imposto.html">Imposto Devido Mensal</a>
+                    </div>
+                </div>    
+                <div class="menu-dropdown">
+                    <button class="botao-dropdown">Cadastros</button>
+                    <div class="conteudo-dropdown">
+                        <a href="compra.html">Compra de Ações</a>
+                        <a href="venda.html">Venda de Ações</a>
+                        <a href="notafiscal.html">Nota Fiscal</a>
+                    </div>
+                </div>    
+                <div class="menu-dropdown PaginaAtiva">
+                    <button class="botao-dropdown">Modificações</button>
+                    <div class="conteudo-dropdown">
+                        <a href="mudancavenda.html">Modificar Venda</a>
+                        <a href="cancelarcadastro.html">Cancelar Cadastro</a>
+                    </div>
+                </div>
+                <div class="menu-dropdown " >
+                    <button class="botao-dropdown" onclick="window.location.href='index.html';">Sobre</button>
+                </div>
+            </nav>
+            <h1 id="titulo">Cancelar Cadastro</h1>     
+        </header>
+        
+        <section >
+            <h2>Cadastros realizados em até 3 dias atrás</h2>
+            <div style="grid-template-columns: 1fr 20fr 1fr; display: grid">
+                <div><!-- div vazia --></div>
+                <div id="DivHistorico">
+                </div>
+            </div>
+            
+            <div style="display: none;">
+                <!-- Form para cancelar compra -->
+                <form method="POST" action="PHP/CancelaCompra.php" id="CancelaCompra">
+                    <input type="text" name="NomeAcao" id="NomeAcaoCompra">
+                    <input type="text" name="CodigoAcao" id="CodigoAcaoCompra">
+                    <select id='CorretoraAcaoCompra' name='CorretoraAcao'>
+                        <option value="Ativa"> Ativa</option>
+                        <option value="BB"> Banco do Brasil</option>
+                        <option value="Bradesco"> Bradesco</option>
+                        <option value="Rico"> Rico</option>
+                    </select>
+                    <input type="number" name="QuantidadeAcaoComprada" id="QuantidadeAcaoComprada" min="0">
+                    <input type="number" name="CustoAcao" id="CustoAcaoComprada" min="0" step="0.01">
+                    <input type="text" name="NotaFiscalAcao" id="NotaFiscalAcaoComprada" min="0">
+                    <input type="date" name="DataCompra" id="DataCompra">
+                </form>
+
+                <!-- Form para cancelar NF -->
+                <form method="POST" action="PHP/CancelaNF.php" id="CancelaNF">
+                    <select id='CorretoraNF' name='CorretoraNF'>
+                        <option value="Ativa"> Ativa</option>
+                        <option value="BB"> Banco do Brasil</option>
+                        <option value="Bradesco"> Bradesco</option>
+                        <option value="Rico"> Rico</option>
+                    </select>
+                    <input type="text" name="NumeroNotaFiscal" id="NumeroNotaFiscal" min="0">
+                    <input type="date" name="DataNotafiscal" id="DataNotafiscal">
+                    <input type="number" name="ValorOperacoesTotais" id="ValorOperacoesTotais" step="0.01">
+                    <input type="number" name="TaxaLiquidacao" id="TaxaLiquidacao" step="0.01">
+                    <input type="number" name="Emolumentos" id="Emolumentos" step="0.01">
+                    <input type="number" name="TaxaOperacao" id="TaxaOperacao" step="0.01">
+                    <input type="number" name="Imposto" id="Imposto" step="0.01">
+                    <input type="number" name="IRRFvista" id="IRRFvista" step="0.01">
+                    <input type="number" name="IRRFDayTrade" id="IRRFDayTrade" step="0.01">
+                </form>
+
+                <!-- Form para cancelar venda -->
+                <form method="POST" action="PHP/CancelaVenda.php" id="CancelaVenda">
+                    <input type="text" name="NomeAcao" id="NomeAcaoVenda">
+                    <input type="text" name="CodigoAcao" id="CodigoAcaoVenda">
+                    <select id='CorretoraAcaoVenda' name='CorretoraAcao'>
+                        <option value="Ativa"> Ativa</option>
+                        <option value="BB"> Banco do Brasil</option>
+                        <option value="Bradesco"> Bradesco</option>
+                        <option value="Rico"> Rico</option>
+                    </select>
+                    <input type="number" name="QuantidadeAcaoVendida" id="QuantidadeAcaoVendida" min="0">
+                    <input type="number" name="PrecoVendido" id="PrecoVendido" min="0" step="0.001">
+                    <input type="number" name="NotaFiscalAcao" id="NotaFiscalAcaoVenda" min="0">
+                    <input type="date" name="DataVenda" id="DataVenda">
+                </form>
+            </div>
+                    
+            <br><br>
+                
+        </section>
+        <footer>
+            <b>Feito por Fabiano Médice<br>2020</b>
+        </footer>
+        <script>
+            var $BancoDeDados = [];
+            Chamar_Banco_De_Dados();
+
+            // -------------------------------------------------------
+            // Chamada do banco de dados das ações
+            // -------------------------------------------------------
+            function Chamar_Banco_De_Dados() 
+            {
+                var xhttp;
+                xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() 
+                {
+                    if (this.readyState == 4 && this.status == 200) 
+                    {
+                        if(this.responseText == "Nenhum registro encontrado")
+                        {
+                            document.getElementById("DivHistorico").innerHTML = this.responseText;
+                        }
+                        else
+                        {
+                            $BancoDeDados = JSON.parse(this.responseText);
+                            OrganizaBancoDeDados();
+                            //console.log($BancoDeDados_Acoes)
+                            //document.getElementById("DivHistorico").innerHTML = this.responseText;
+                        }
+                    }
+                }
+                xhttp.open("GET", "PHP/LerCadastros.php", false); //o false não deixa ser assincrono
+                xhttp.send();
+            }
+
+
+            // -------------------------------------------------------
+            // Organiza o Banco de Dados Enviados e cria divs
+            // -------------------------------------------------------
+            function OrganizaBancoDeDados()
+            {
+                //organiza o banco de dados
+                multiSort($BancoDeDados, {DataRegistro: 'asc', Operacao: 'asc', Corretora: 'asc', NomeAcao: 'asc', CodigoAcao: 'asc'})
+                
+                var texto="";
+                
+                for (i=0;i<$BancoDeDados.length;i++)
+                {
+                    if(i-1>=0)
+                    {
+                        //Não é o primeiro número
+                        if($BancoDeDados[i].Operacao == $BancoDeDados[i-1].Operacao && $BancoDeDados[i].DataRegistro == $BancoDeDados[i-1].DataRegistro)
+                        {
+                            //Mesma operação e data de registro
+                            NumeroLinha = NumeroLinha+1;//Informa nova linha para a Variavel para colocar background lightgrey em cada linha 
+                        }
+                        else
+                        {
+                            //Não é a mesma operação ou data de registro
+                            NumeroLinha=1;//Reseta a Variavel para colocar background lightgrey em cada linha 
+
+                            //Coloca titulo da nova operação
+                            if ($BancoDeDados[i].Operacao=="NF")
+                            {
+                                //Para Nota Fiscal
+                                texto = texto+
+                                '<div style="grid-template-rows: 1fr; display: grid"><h2>Notas Fiscais Cadastradas na data '+$BancoDeDados[i].DataRegistro+'</h2></div>'+
+
+                                '<div style="grid-template-rows: 1fr; display: grid">'+
+                                    '<div style="grid-template-columns: repeat(11,1fr); display: grid">'+
+                                        '<div style="text-align: center;">Corretora</div>'+
+                                        '<div style="text-align: center;">Nota Fiscal</div>'+
+                                        '<div style="text-align: center;">Data da Nota Fiscal</div>'+
+                                        '<div style="text-align: center;">Valor Total das Operações</div>'+
+                                        '<div style="text-align: center;">Taxa da Liquidação</div>'+
+                                        '<div style="text-align: center;">Emolumentos</div>'+
+                                        '<div style="text-align: center;">Corretagem</div>'+
+                                        '<div style="text-align: center;">ISS</div>'+
+                                        '<div style="text-align: center;">IRRF à vista</div>'+
+                                        '<div style="text-align: center;">IRRF DayTrade</div>'+
+                                    '</div>'+
+                                '</div>';
+                            }
+                            else if ($BancoDeDados[i].Operacao=="Compra")
+                            {
+                                //Para Compras
+                                texto = texto+
+                                '<div style="grid-template-rows: 1fr; display: grid"><h2>Compras Cadastradas na data '+$BancoDeDados[i].DataRegistro+'</h2></div>'+
+                            
+                                '<div style="grid-template-rows: 1fr; display: grid">'+
+                                    '<div style="grid-template-columns: repeat(7,1fr); display: grid">'+
+                                        '<div style="text-align: center;">Nome da Ação</div>'+
+                                        '<div style="text-align: center;">Corretora</div>'+
+                                        '<div style="text-align: center;">Quantidade</div>'+
+                                        '<div style="text-align: center;">Valor Unitário NF</div>'+
+                                        '<div style="text-align: center;">Nota Fiscal</div>'+
+                                        '<div style="text-align: center;">Data da compra</div>'+
+                                    '</div>'+
+                                '</div>';
+                            }
+                            else if ($BancoDeDados[i].Operacao=="Venda")
+                            {
+                                //Para Vendas
+                                texto = texto+
+                                '<div style="grid-template-rows: 1fr; display: grid"><h2>Vendas Cadastradas na data '+$BancoDeDados[i].DataRegistro+'</h2></div>'+
+
+                                '<div style="grid-template-rows: 1fr; display: grid">'+
+                                    '<div style="grid-template-columns: repeat(7,1fr); display: grid">'+
+                                        '<div style="text-align: center;">Nome da Ação</div>'+
+                                        '<div style="text-align: center;">Corretora</div>'+
+                                        '<div style="text-align: center;">Quantidade</div>'+
+                                        '<div style="text-align: center;">Valor Unitário NF</div>'+
+                                        '<div style="text-align: center;">Nota Fiscal</div>'+
+                                        '<div style="text-align: center;">Data da Venda</div>'+
+                                    '</div>'+
+                                '</div>';
+                            }
+                            else
+                            {
+                                //Erro
+                                alert("Erro no Banco de dados, no indice "+i);
+                            }
+                        }
+
+                        //Coloca a nova informação
+
+                        if ($BancoDeDados[i].Operacao=="NF")
+                        {
+                            //Para Nota Fiscal
+                            if(NumeroLinha%2==1)
+                            {
+                                //Linha inicial ou impar
+                                //faz o texto com com background branco/normal
+                                texto = texto+
+                                '<div style="grid-template-rows: 1fr; display: grid">'+
+                                    '<div style="grid-template-columns: repeat(11,1fr); display: grid">';
+                            }
+                            else
+                            {
+                                //Linha par
+                                //faz o texto com background lightgrey
+                                texto = texto+
+                                '<div style="grid-template-rows: 1fr; display: grid">'+
+                                    '<div style="grid-template-columns: repeat(11,1fr); display: grid; background-color:lightgray ">';
+                            }
+                            
+                            texto = texto+        
+                                        '<div style="text-align: center;">'+$BancoDeDados[i].Corretora+'</div>'+
+                                        '<div style="text-align: center;">'+$BancoDeDados[i].NotaFiscal+'</div>'+
+                                        '<div style="text-align: center;">'+$BancoDeDados[i].Data+'</div>'+
+                                        '<div style="text-align: center;">'+($BancoDeDados[i].ValorOperacoesTotais*1).toFixed(2)+'</div>'+
+                                        '<div style="text-align: center;">'+($BancoDeDados[i].TaxaLiquidacao*1).toFixed(2)+'</div>'+
+                                        '<div style="text-align: center;">'+($BancoDeDados[i].Emolumentos*1).toFixed(2)+'</div>'+
+                                        '<div style="text-align: center;">'+($BancoDeDados[i].TaxaOperacao*1).toFixed(2)+'</div>'+
+                                        '<div style="text-align: center;">'+($BancoDeDados[i].Imposto*1).toFixed(2)+'</div>'+
+                                        '<div style="text-align: center;">'+($BancoDeDados[i].IRRFvista*1).toFixed(2)+'</div>'+
+                                        '<div style="text-align: center;">'+($BancoDeDados[i].IRRFDayTrade*1).toFixed(2)+'</div>'+
+                                        '<div style="text-align: center;"> <input type="button" onclick="CancelarCadastro('+i+')" value="Cancelar" style="background-color: #f44336; color: white"> </div>'+
+                                    '</div>'+
+                                '</div>';
+                        }
+                        else if ($BancoDeDados[i].Operacao=="Compra")
+                        {
+                            //Para Compras
+                            //Para Nota Fiscal
+                            if(NumeroLinha%2==1)
+                            {
+                                //Linha inicial ou impar
+                                //faz o texto com com background branco/normal
+                                texto = texto+
+                                '<div style="grid-template-rows: 1fr; display: grid">'+
+                                    '<div style="grid-template-columns: repeat(7,1fr); display: grid">';
+                            }
+                            else
+                            {
+                                //Linha par
+                                //faz o texto com background lightgrey
+                                texto = texto+
+                                '<div style="grid-template-rows: 1fr; display: grid">'+
+                                    '<div style="grid-template-columns: repeat(7,1fr); display: grid; background-color:lightgray">';
+                            }
+                            texto = texto+
+                                        '<div style="text-align: center;">'+$BancoDeDados[i].NomeAcao+" - "+$BancoDeDados[i].CodigoAcao+'</div>'+
+                                        '<div style="text-align: center;">'+$BancoDeDados[i].Corretora+'</div>'+
+                                        '<div style="text-align: center;">'+$BancoDeDados[i].QuantidadeAcao+'</div>'+
+                                        '<div style="text-align: center;">'+($BancoDeDados[i].Valor*1).toFixed(2)+'</div>'+
+                                        '<div style="text-align: center;">'+$BancoDeDados[i].NotaFiscal+'</div>'+
+                                        '<div style="text-align: center;">'+$BancoDeDados[i].Data+'</div>'+
+                                        '<div style="text-align: center;"> <input type="button" onclick="CancelarCadastro('+i+')" value="Cancelar" style="background-color: #f44336; color: white"> </div>'+
+                                    '</div>'+
+                                '</div>';
+
+                        }
+                        else if ($BancoDeDados[i].Operacao=="Venda")
+                        {
+                            //Para Vendas
+                            //Para Nota Fiscal
+                            if(NumeroLinha%2==1)
+                            {
+                                //Linha inicial ou impar
+                                //faz o texto com com background branco/normal
+                                texto = texto+
+                                '<div style="grid-template-rows: 1fr; display: grid">'+
+                                    '<div style="grid-template-columns: repeat(7,1fr); display: grid">';
+                            }
+                            else
+                            {
+                                //Linha par
+                                //faz o texto com background lightgrey
+                                texto = texto+
+                                '<div style="grid-template-rows: 1fr; display: grid">'+
+                                    '<div style="grid-template-columns: repeat(7,1fr); display: grid; background-color:lightgray">';
+                            }
+                            texto = texto+
+                                    '<div style="text-align: center;">'+$BancoDeDados[i].NomeAcao+" - "+$BancoDeDados[i].CodigoAcao+'</div>'+
+                                    '<div style="text-align: center;">'+$BancoDeDados[i].Corretora+'</div>'+
+                                    '<div style="text-align: center;">'+$BancoDeDados[i].QuantidadeAcao+'</div>'+
+                                    '<div style="text-align: center;">'+($BancoDeDados[i].Valor*1).toFixed(2)+'</div>'+
+                                    '<div style="text-align: center;">'+$BancoDeDados[i].NotaFiscal+'</div>'+
+                                    '<div style="text-align: center;">'+$BancoDeDados[i].Data+'</div>'+
+                                    '<div style="text-align: center;"> <input type="button" onclick="CancelarCadastro('+i+')" value="Cancelar" style="background-color: #f44336; color: white"> </div>'+
+                                '</div>'+
+                            '</div>';
+                        }
+                        else
+                        {
+                            //Erro
+                            alert("Erro no Banco de dados, no indice "+i);
+                        }
+
+
+
+                    }
+                    else
+                    {
+                        //É o primeiro número
+                        var NumeroLinha=1;//Variavel para colocar background lightgrey em cada linha 
+                        
+                        if ($BancoDeDados[i].Operacao=="NF")
+                        {
+                            //Para Nota Fiscal
+                            texto = texto+
+                            '<div style="grid-template-rows: 1fr; display: grid"><h2>Notas Fiscais Cadastradas na data '+$BancoDeDados[i].DataRegistro+'</h2></div>'+
+
+                            '<div style="grid-template-rows: 1fr; display: grid">'+
+                                '<div style="grid-template-columns: repeat(11,1fr); display: grid">'+
+                                    '<div style="text-align: center;">Corretora</div>'+
+                                    '<div style="text-align: center;">Nota Fiscal</div>'+
+                                    '<div style="text-align: center;">Data da Nota Fiscal</div>'+
+                                    '<div style="text-align: center;">Valor Total das Operações</div>'+
+                                    '<div style="text-align: center;">Taxa da Liquidação</div>'+
+                                    '<div style="text-align: center;">Emolumentos</div>'+
+                                    '<div style="text-align: center;">Corretagem</div>'+
+                                    '<div style="text-align: center;">ISS</div>'+
+                                    '<div style="text-align: center;">IRRF à vista</div>'+
+                                    '<div style="text-align: center;">IRRF DayTrade</div>'+
+                                '</div>'+
+                            '</div>'+
+
+                            '<div style="grid-template-rows: 1fr; display: grid">'+
+                                '<div style="grid-template-columns: repeat(11,1fr); display: grid">'+
+                                    '<div style="text-align: center;">'+$BancoDeDados[i].Corretora+'</div>'+
+                                    '<div style="text-align: center;">'+$BancoDeDados[i].NotaFiscal+'</div>'+
+                                    '<div style="text-align: center;">'+$BancoDeDados[i].Data+'</div>'+
+                                    '<div style="text-align: center;">'+($BancoDeDados[i].ValorOperacoesTotais*1).toFixed(2)+'</div>'+
+                                    '<div style="text-align: center;">'+($BancoDeDados[i].TaxaLiquidacao*1).toFixed(2)+'</div>'+
+                                    '<div style="text-align: center;">'+($BancoDeDados[i].Emolumentos*1).toFixed(2)+'</div>'+
+                                    '<div style="text-align: center;">'+($BancoDeDados[i].TaxaOperacao*1).toFixed(2)+'</div>'+
+                                    '<div style="text-align: center;">'+($BancoDeDados[i].Imposto*1).toFixed(2)+'</div>'+
+                                    '<div style="text-align: center;">'+($BancoDeDados[i].IRRFvista*1).toFixed(2)+'</div>'+
+                                    '<div style="text-align: center;">'+($BancoDeDados[i].IRRFDayTrade*1).toFixed(2)+'</div>'+
+                                    '<div style="text-align: center;"> <input type="button" onclick="CancelarCadastro('+i+')" value="Cancelar" style="background-color: #f44336; color: white"> </div>'+
+                                '</div>'+
+                            '</div>';
+                        }
+                        else if ($BancoDeDados[i].Operacao=="Compra")
+                        {
+                            //Para Compras
+                            texto = texto+
+                            '<div style="grid-template-rows: 1fr; display: grid"><h2>Compras Cadastradas na data '+$BancoDeDados[i].DataRegistro+'</h2></div>'+
+                        
+                            '<div style="grid-template-rows: 1fr; display: grid">'+
+                                '<div style="grid-template-columns: repeat(7,1fr); display: grid">'+
+                                    '<div style="text-align: center;">Nome da Ação</div>'+
+                                    '<div style="text-align: center;">Corretora</div>'+
+                                    '<div style="text-align: center;">Quantidade</div>'+
+                                    '<div style="text-align: center;">Valor Unitário NF</div>'+
+                                    '<div style="text-align: center;">Nota Fiscal</div>'+
+                                    '<div style="text-align: center;">Data da compra</div>'+
+                                '</div>'+
+                            '</div>'+
+
+                            '<div style="grid-template-rows: 1fr; display: grid">'+
+                                '<div style="grid-template-columns: repeat(7,1fr); display: grid">'+
+                                    '<div style="text-align: center;">'+$BancoDeDados[i].NomeAcao+" - "+$BancoDeDados[i].CodigoAcao+'</div>'+
+                                    '<div style="text-align: center;">'+$BancoDeDados[i].Corretora+'</div>'+
+                                    '<div style="text-align: center;">'+$BancoDeDados[i].QuantidadeAcao+'</div>'+
+                                    '<div style="text-align: center;">'+($BancoDeDados[i].Valor*1).toFixed(2)+'</div>'+
+                                    '<div style="text-align: center;">'+$BancoDeDados[i].NotaFiscal+'</div>'+
+                                    '<div style="text-align: center;">'+$BancoDeDados[i].Data+'</div>'+
+                                    '<div style="text-align: center;"> <input type="button" onclick="CancelarCadastro('+i+')" value="Cancelar" style="background-color: #f44336; color: white"> </div>'+
+                                '</div>'+
+                            '</div>';
+
+                        }
+                        else if ($BancoDeDados[i].Operacao=="Venda")
+                        {
+                            //Para Vendas
+                            texto = texto+
+                            '<div style="grid-template-rows: 1fr; display: grid"><h2>Vendas Cadastradas na data '+$BancoDeDados[i].DataRegistro+'</h2></div>'+
+
+                            '<div style="grid-template-rows: 1fr; display: grid">'+
+                                '<div style="grid-template-columns: repeat(7,1fr); display: grid">'+
+                                    '<div style="text-align: center;">Nome da Ação</div>'+
+                                    '<div style="text-align: center;">Corretora</div>'+
+                                    '<div style="text-align: center;">Quantidade</div>'+
+                                    '<div style="text-align: center;">Valor Unitário NF</div>'+
+                                    '<div style="text-align: center;">Nota Fiscal</div>'+
+                                    '<div style="text-align: center;">Data da Venda</div>'+
+                                '</div>'+
+                            '</div>'+
+
+                            '<div style="grid-template-rows: 1fr; display: grid">'+
+                                '<div style="grid-template-columns: repeat(7,1fr); display: grid">'+
+                                    '<div style="text-align: center;">'+$BancoDeDados[i].NomeAcao+" - "+$BancoDeDados[i].CodigoAcao+'</div>'+
+                                    '<div style="text-align: center;">'+$BancoDeDados[i].Corretora+'</div>'+
+                                    '<div style="text-align: center;">'+$BancoDeDados[i].QuantidadeAcao+'</div>'+
+                                    '<div style="text-align: center;">'+($BancoDeDados[i].Valor*1).toFixed(2)+'</div>'+
+                                    '<div style="text-align: center;">'+$BancoDeDados[i].NotaFiscal+'</div>'+
+                                    '<div style="text-align: center;">'+$BancoDeDados[i].Data+'</div>'+
+                                    '<div style="text-align: center;"> <input type="button" onclick="CancelarCadastro('+i+')" value="Cancelar" style="background-color: #f44336; color: white"> </div>'+
+                                '</div>'+
+                            '</div>';
+                        }
+                        else
+                        {
+                            //Erro
+                            alert("Erro no Banco de dados, no indice "+i);
+                        }
+                    }          
+                }
+                document.getElementById("DivHistorico").innerHTML = texto;
+            }
+
+            function CancelarCadastro(indice)
+            {
+                console.log($BancoDeDados[indice])
+                if($BancoDeDados[indice].Operacao == "Compra")
+                {
+                    document.getElementById('NomeAcaoCompra').value = $BancoDeDados[indice].NomeAcao;
+                    document.getElementById('CodigoAcaoCompra').value = $BancoDeDados[indice].CodigoAcao;
+                    document.getElementById('CorretoraAcaoCompra').value = $BancoDeDados[indice].Corretora;
+                    document.getElementById('QuantidadeAcaoComprada').value = $BancoDeDados[indice].QuantidadeAcao;
+                    document.getElementById('CustoAcaoComprada').value = $BancoDeDados[indice].Valor;
+                    document.getElementById('NotaFiscalAcaoComprada').value = $BancoDeDados[indice].NotaFiscal;
+                    document.getElementById('DataCompra').value = $BancoDeDados[indice].Data;
+                    document.getElementById("CancelaCompra").submit();
+                }
+                else if($BancoDeDados[indice].Operacao == "NF")
+                {
+                    document.getElementById('CorretoraNF').value = $BancoDeDados[indice].Corretora;
+                    document.getElementById('NumeroNotaFiscal').value = $BancoDeDados[indice].NotaFiscal;
+                    document.getElementById('DataNotafiscal').value = $BancoDeDados[indice].Data;
+                    document.getElementById('ValorOperacoesTotais').value = $BancoDeDados[indice].ValorOperacoesTotais;
+                    document.getElementById('TaxaLiquidacao').value = $BancoDeDados[indice].TaxaLiquidacao;
+                    document.getElementById('Emolumentos').value = $BancoDeDados[indice].Emolumentos;
+                    document.getElementById('TaxaOperacao').value = $BancoDeDados[indice].TaxaOperacao;
+                    document.getElementById('Imposto').value = $BancoDeDados[indice].Imposto;
+                    document.getElementById('IRRFvista').value = $BancoDeDados[indice].IRRFvista;
+                    document.getElementById('IRRFDayTrade').value = $BancoDeDados[indice].IRRFDayTrade;
+                    document.getElementById("CancelaNF").submit();
+                }
+                else if($BancoDeDados[indice].Operacao == "Venda")
+                {
+                    document.getElementById('NomeAcaoVenda').value = $BancoDeDados[indice].NomeAcao;
+                    document.getElementById('CodigoAcaoVenda').value = $BancoDeDados[indice].CodigoAcao;
+                    document.getElementById('CorretoraAcaoVenda').value = $BancoDeDados[indice].Corretora;
+                    document.getElementById('QuantidadeAcaoVendida').value = $BancoDeDados[indice].QuantidadeAcao;
+                    document.getElementById('PrecoVendido').value = $BancoDeDados[indice].Valor;
+                    document.getElementById('NotaFiscalAcaoVenda').value = $BancoDeDados[indice].NotaFiscal;
+                    document.getElementById('DataVenda').value = $BancoDeDados[indice].Data;
+                    document.getElementById("CancelaVenda").submit();
+                }
+            }
+
+
+
+
+            /** Fonte: <https://www.golangprograms.com/javascript-sort-multi-dimensional-array-on-specific-columns.html>
+            * Sorts an array of objects by column/property.
+            * @param {Array} array - The array of objects.
+            * @param {object} sortObject - The object that contains the sort order keys with directions (asc/desc). e.g. { age: 'desc', name: 'asc' }
+            * @returns {Array} The sorted array.
+            */
+            function multiSort(array, sortObject = {}) 
+            {
+                const sortKeys = Object.keys(sortObject);
+
+                // Return array if no sort object is supplied.
+                if (!sortKeys.length) 
+                {
+                    return array;
+                }
+
+                // Change the values of the sortObject keys to -1, 0, or 1.
+                for (let key in sortObject) 
+                {
+                    sortObject[key] = sortObject[key] === 'desc' || sortObject[key] === -1 ? -1 : (sortObject[key] === 'skip' || sortObject[key] === 0 ? 0 : 1);
+                }
+
+                const keySort = (a, b, direction) => 
+                { 
+                    direction = direction !== null ? direction : 1;
+
+                    if (a === b) 
+                    { // If the values are the same, do not switch positions.
+                        return 0;
+                    }
+
+                    // If b > a, multiply by -1 to get the reverse direction.
+                    return a > b ? direction : -1 * direction;
+                };
+
+                return array.sort((a, b) => 
+                {
+                    let sorted = 0;
+                    let index = 0;
+
+                    // Loop until sorted (-1 or 1) or until the sort keys have been processed.
+                    while (sorted === 0 && index < sortKeys.length) 
+                    {
+                        const key = sortKeys[index];
+
+                        if (key) 
+                        {
+                            const direction = sortObject[key];
+
+                            sorted = keySort(a[key], b[key], direction);
+                            index++;
+                        }
+                    }
+
+                    return sorted;
+                });
+            }
+        </script>
+    </body>
+</html>
